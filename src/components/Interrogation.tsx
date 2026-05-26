@@ -163,7 +163,7 @@ function FloatingEmojiBurst() {
             x: Math.cos((i / emojis.length) * Math.PI * 2) * 140,
             y: Math.sin((i / emojis.length) * Math.PI * 2) * 80,
           }}
-          transition={{ duration: 1.5, delay: i * 0.05 }}
+          transition={{ duration: 2.6, delay: i * 0.08, ease: "easeOut" }}
         >
           {e}
         </motion.span>
