@@ -231,6 +231,17 @@
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
 }
-.animate-pulse-glow { animation: pulse-glow 2.5s ease-in-out infinite; }
-.animate-twinkle { animation: twinkle 3s ease-in-out infinite; }
-.animate-gradient { background-size: 200% 200%; animation: gradient-shift 8s ease infinite; }
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.015); }
+}
+@keyframes drift {
+  0% { transform: translate(0,0); }
+  50% { transform: translate(8px,-12px); }
+  100% { transform: translate(0,0); }
+}
+.animate-pulse-glow { animation: pulse-glow 5s ease-in-out infinite; }
+.animate-twinkle { animation: twinkle 6s ease-in-out infinite; }
+.animate-gradient { background-size: 200% 200%; animation: gradient-shift 16s ease infinite; }
+.animate-breathe { animation: breathe 6s ease-in-out infinite; }
+.animate-drift { animation: drift 14s ease-in-out infinite; }

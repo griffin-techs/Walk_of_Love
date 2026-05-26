@@ -16,7 +16,7 @@ export function Hero() {
 
   useEffect(() => {
     if (step >= LINES.length - 1) return;
-    const t = setTimeout(() => setStep((s) => s + 1), step === 0 ? 2200 : 3200);
+    const t = setTimeout(() => setStep((s) => s + 1), step === 0 ? 3600 : 5200);
     return () => clearTimeout(t);
   }, [step]);
 
@@ -60,10 +60,10 @@ export function Hero() {
           <AnimatePresence mode="wait">
             <motion.h1
               key={step}
-              initial={{ opacity: 0, y: 30, filter: "blur(20px)" }}
+              initial={{ opacity: 0, y: 30, filter: "blur(24px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -30, filter: "blur(20px)" }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              exit={{ opacity: 0, y: -30, filter: "blur(24px)" }}
+              transition={{ duration: 1.8, ease: [0.22, 1, 0.36, 1] }}
               className={
                 step === 0
                   ? "font-display text-7xl md:text-9xl font-bold text-white drop-shadow-[0_4px_30px_oklch(0.65_0.27_310/60%)]"

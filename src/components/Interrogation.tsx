@@ -57,7 +57,7 @@ export function Interrogation({
     setTimeout(() => {
       setReply(null);
       setIdx((i) => i + 1);
-    }, 1600);
+    }, 3200);
   };
 
   return (
@@ -88,7 +88,7 @@ export function Interrogation({
                 initial={{ opacity: 0, y: 40, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -40, scale: 0.95 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
                 className="glass rounded-3xl p-8 md:p-12"
               >
                 <h3 className="font-display text-2xl md:text-3xl font-semibold text-foreground">
@@ -118,7 +118,7 @@ export function Interrogation({
                 initial={{ opacity: 0, scale: 0.6 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.2 }}
-                transition={{ type: "spring", damping: 14 }}
+                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
                 className="flex flex-col items-center justify-center gap-4 pt-10"
               >
                 <FloatingEmojiBurst />
@@ -163,7 +163,7 @@ function FloatingEmojiBurst() {
             x: Math.cos((i / emojis.length) * Math.PI * 2) * 140,
             y: Math.sin((i / emojis.length) * Math.PI * 2) * 80,
           }}
-          transition={{ duration: 1.5, delay: i * 0.05 }}
+          transition={{ duration: 2.6, delay: i * 0.08, ease: "easeOut" }}
         >
           {e}
         </motion.span>
