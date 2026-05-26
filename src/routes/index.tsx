@@ -4,6 +4,7 @@ import { Hero } from "@/components/Hero";
 import { Interrogation, type Answers } from "@/components/Interrogation";
 import { DatePlanner, type DatePlan } from "@/components/DatePlanner";
 import { Vacation } from "@/components/Vacation";
+import { LoveQuiz } from "@/components/LoveQuiz";
 import { Finale } from "@/components/Finale";
 import { FloatingHearts, CursorGlow } from "@/components/FloatingHearts";
 import { MusicToggle } from "@/components/MusicToggle";
@@ -29,6 +30,7 @@ function Index() {
       <Interrogation answers={answers} setAnswers={setAnswers} />
       <DatePlanner plan={plan} setPlan={setPlan} />
       <Vacation picks={destinations} setPicks={setDestinations} />
+      <LoveQuiz />
       <Finale answers={answers} plan={plan} destinations={destinations} />
     </main>
   );
