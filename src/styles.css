@@ -245,9 +245,3 @@
 .animate-gradient { background-size: 200% 200%; animation: gradient-shift 16s ease infinite; }
 .animate-breathe { animation: breathe 6s ease-in-out infinite; }
 .animate-drift { animation: drift 14s ease-in-out infinite; }
-
-/* Smoother, dreamier cursor */
-@media (pointer: fine) {
-  * { cursor: none; }
-  a, button, [role="button"], input, textarea, select { cursor: none; }
-}
