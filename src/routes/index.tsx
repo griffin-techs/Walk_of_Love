@@ -5,9 +5,12 @@ import { Interrogation, type Answers } from "@/components/Interrogation";
 import { DatePlanner, type DatePlan } from "@/components/DatePlanner";
 import { Vacation } from "@/components/Vacation";
 import { LoveQuiz } from "@/components/LoveQuiz";
+import { Reasons } from "@/components/Reasons";
+import { Promises } from "@/components/Promises";
 import { Finale } from "@/components/Finale";
 import { FloatingHearts, CursorGlow } from "@/components/FloatingHearts";
 import { MusicToggle } from "@/components/MusicToggle";
+import { RainToggle } from "@/components/RainToggle";
 import { Loader } from "@/components/Loader";
 
 export const Route = createFileRoute("/")({
@@ -26,11 +29,14 @@ function Index() {
       <FloatingHearts />
       <CursorGlow />
       <MusicToggle />
+      <RainToggle />
       <Hero />
       <Interrogation answers={answers} setAnswers={setAnswers} />
       <DatePlanner plan={plan} setPlan={setPlan} />
       <Vacation picks={destinations} setPicks={setDestinations} />
       <LoveQuiz />
+      <Reasons />
+      <Promises />
       <Finale answers={answers} plan={plan} destinations={destinations} />
     </main>
   );
