@@ -245,3 +245,10 @@
 .animate-gradient { background-size: 200% 200%; animation: gradient-shift 16s ease infinite; }
 .animate-breathe { animation: breathe 6s ease-in-out infinite; }
 .animate-drift { animation: drift 14s ease-in-out infinite; }
+
+@keyframes rain-fall {
+  0% { transform: translateY(-10vh); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translateY(120vh); opacity: 0; }
+}
+.animate-rain { animation: rain-fall linear infinite; }
