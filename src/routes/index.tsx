@@ -7,6 +7,9 @@ import { Vacation } from "@/components/Vacation";
 import { LoveQuiz } from "@/components/LoveQuiz";
 import { Reasons } from "@/components/Reasons";
 import { Promises } from "@/components/Promises";
+import { OpenWhen } from "@/components/OpenWhen";
+import { Letter } from "@/components/Letter";
+import { LittleThings } from "@/components/LittleThings";
 import { Finale } from "@/components/Finale";
 import { FloatingHearts, CursorGlow } from "@/components/FloatingHearts";
 import { MusicToggle } from "@/components/MusicToggle";
@@ -37,6 +40,9 @@ function Index() {
       <LoveQuiz />
       <Reasons />
       <Promises />
+      <OpenWhen />
+      <LittleThings />
+      <Letter />
       <Finale answers={answers} plan={plan} destinations={destinations} />
     </main>
   );
