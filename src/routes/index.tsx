@@ -5,11 +5,15 @@ import { Interrogation, type Answers } from "@/components/Interrogation";
 import { DatePlanner, type DatePlan } from "@/components/DatePlanner";
 import { Vacation } from "@/components/Vacation";
 import { LoveQuiz } from "@/components/LoveQuiz";
+import { Compatibility } from "@/components/Compatibility";
+import { Dealbreakers } from "@/components/Dealbreakers";
 import { Reasons } from "@/components/Reasons";
 import { Promises } from "@/components/Promises";
 import { OpenWhen } from "@/components/OpenWhen";
 import { Letter } from "@/components/Letter";
 import { LittleThings } from "@/components/LittleThings";
+import { Invite } from "@/components/Invite";
+import { Countdown } from "@/components/Countdown";
 import { Finale } from "@/components/Finale";
 import { FloatingHearts, CursorGlow } from "@/components/FloatingHearts";
 import { MusicToggle } from "@/components/MusicToggle";
@@ -38,11 +42,15 @@ function Index() {
       <DatePlanner plan={plan} setPlan={setPlan} />
       <Vacation picks={destinations} setPicks={setDestinations} />
       <LoveQuiz />
+      <Compatibility answers={answers} />
+      <Dealbreakers />
       <Reasons />
       <Promises />
       <OpenWhen />
       <LittleThings />
       <Letter />
+      <Invite plan={plan} />
+      <Countdown plan={plan} />
       <Finale answers={answers} plan={plan} destinations={destinations} />
     </main>
   );
