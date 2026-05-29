@@ -19,6 +19,13 @@ import { FloatingHearts, CursorGlow } from "@/components/FloatingHearts";
 import { MusicToggle } from "@/components/MusicToggle";
 import { RainToggle } from "@/components/RainToggle";
 import { Loader } from "@/components/Loader";
+import { TodaysNote } from "@/components/TodaysNote";
+import { Soundtrack } from "@/components/Soundtrack";
+import { MapOfYou } from "@/components/MapOfYou";
+import { Diary } from "@/components/Diary";
+import { AlmostTexted } from "@/components/AlmostTexted";
+import { ReplyToJack } from "@/components/ReplyToJack";
+import { EasterEggs } from "@/components/EasterEggs";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -37,7 +44,9 @@ function Index() {
       <CursorGlow />
       <MusicToggle />
       <RainToggle />
+      <EasterEggs />
       <Hero />
+      <TodaysNote />
       <Interrogation answers={answers} setAnswers={setAnswers} />
       <DatePlanner plan={plan} setPlan={setPlan} />
       <Vacation picks={destinations} setPicks={setDestinations} />
@@ -46,9 +55,14 @@ function Index() {
       <Dealbreakers />
       <Reasons />
       <Promises />
+      <MapOfYou />
       <OpenWhen />
       <LittleThings />
+      <AlmostTexted />
+      <Soundtrack />
       <Letter />
+      <Diary />
+      <ReplyToJack />
       <Invite plan={plan} />
       <Countdown plan={plan} />
       <Finale answers={answers} plan={plan} destinations={destinations} />
