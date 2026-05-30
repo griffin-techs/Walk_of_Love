@@ -5,6 +5,10 @@ import paris from "@/assets/travel-paris.jpg";
 import tokyo from "@/assets/travel-tokyo.jpg";
 import bali from "@/assets/travel-bali.jpg";
 import cappadocia from "@/assets/travel-cappadocia.jpg";
+import dubai from "@/assets/travel-dubai.jpg";
+import zanzibar from "@/assets/travel-zanzibar.jpg";
+import borabora from "@/assets/travel-borabora.jpg";
+import seychelles from "@/assets/travel-seychelles.jpg";
 
 const DESTS = [
   { name: "Maldives", quote: "barefoot, sun-drunk, ours.", img: maldives },
@@ -13,10 +17,10 @@ const DESTS = [
   { name: "Tokyo", quote: "neon nights and noodles.", img: tokyo },
   { name: "Bali", quote: "swing into the sunset.", img: bali },
   { name: "Cappadocia", quote: "above the clouds with you.", img: cappadocia },
-  { name: "Dubai", quote: "skyline dinners only." },
-  { name: "Zanzibar", quote: "turquoise & turmeric." },
-  { name: "Bora Bora", quote: "your villa or mine?" },
-  { name: "Seychelles", quote: "the kind of quiet we deserve." },
+  { name: "Dubai", quote: "skyline dinners only.", img: dubai },
+  { name: "Zanzibar", quote: "turquoise & turmeric.", img: zanzibar },
+  { name: "Bora Bora", quote: "your villa or mine?", img: borabora },
+  { name: "Seychelles", quote: "the kind of quiet we deserve.", img: seychelles },
 ];
 
 export function Vacation({

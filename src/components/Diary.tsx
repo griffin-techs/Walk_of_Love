@@ -47,6 +47,8 @@ export function Diary() {
   }, []);
 
   const daysSince = startMs ? Math.floor((now - startMs) / 86_400_000) + 1 : 1;
+  // TEMP: unlock everything — we'll re-introduce a more romantic locking mechanism later.
+  const UNLOCK_ALL = true;
 
   return (
     <section className="relative px-6 py-32">
@@ -66,7 +68,7 @@ export function Diary() {
 
         <div className="mt-14 space-y-6">
           {ENTRIES.map((e, i) => {
-            const unlocked = daysSince >= e.day;
+            const unlocked = UNLOCK_ALL || daysSince >= e.day;
             const daysLeft = e.day - daysSince;
             return (
               <motion.div

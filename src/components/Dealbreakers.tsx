@@ -17,6 +17,16 @@ const CARDS: Card[] = [
   { text: "Doesn't like dogs", emoji: "🐶", leftReply: "Instant disqualification. Sorry.", rightReply: "Concerning. But fixable." },
   { text: "Steals the blanket every night", emoji: "🛏️", leftReply: "Justified. War declared.", rightReply: "Same. Negotiating co-ownership." },
   { text: "Talks during the movie", emoji: "🎬", leftReply: "Cinema crimes. Jail.", rightReply: "Adorable. Annoying. Cute." },
+  { text: "Sends voice notes longer than 3 minutes", emoji: "🎙️", leftReply: "Justified. Issue a podcast warning.", rightReply: "Honestly? Jack would listen to all of them. Twice." },
+  { text: "Says 'lol' but isn't actually laughing", emoji: "😐", leftReply: "Emotional fraud. Banned.", rightReply: "We all do it. Forgiven." },
+  { text: "Leaves 1% battery and doesn't charge it", emoji: "🔋", leftReply: "Chaos goblin behavior. Noted.", rightReply: "Living on the edge. Sexy, actually." },
+  { text: "Replies 'k'", emoji: "💀", leftReply: "Capital offense. Goodbye forever.", rightReply: "Bold. Cold. Slightly hot." },
+  { text: "Doesn't share their fries", emoji: "🍟", leftReply: "Jack is taking this personally.", rightReply: "Respect. Boundaries. Cute." },
+  { text: "Uses 'literally' when not literal", emoji: "📚", leftReply: "Linguists are crying. Approved.", rightReply: "Literally everyone does it. Pass." },
+  { text: "Owns more than 4 streaming subscriptions", emoji: "📺", leftReply: "Financial red flag. Investigate.", rightReply: "Generous. We're moving in." },
+  { text: "Hates surprise birthday parties", emoji: "🎂", leftReply: "Valid. Jack will whisper-celebrate instead.", rightReply: "Same. Cancel everyone." },
+  { text: "Falls asleep during movies, every time", emoji: "😴", leftReply: "Sleepy gremlin. Adored.", rightReply: "Same. Naps > plot." },
+  { text: "Has strong opinions about coffee", emoji: "☕", leftReply: "Insufferable. Beautiful. Married material.", rightReply: "Jack is taking notes for the date." },
 ];
 
 export function Dealbreakers() {
