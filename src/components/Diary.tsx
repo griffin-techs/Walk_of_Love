@@ -2,6 +2,66 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const KEY = "sheila_diary_start";
+const UNLOCK_KEY = "sheila_diary_unlocked";
+const FAILS_KEY = "sheila_diary_fails";
+
+// 💌 The unlock quiz — questions only Sheila would know.
+// Each question accepts multiple spellings/variants. Edit freely.
+const QUESTIONS: { q: string; answers: string[]; hints: string[] }[] = [
+  {
+    q: "what did Jack burn the first time he cooked for you?",
+    answers: ["rice", "the rice", "white rice"],
+    hints: ["pasta", "rice", "eggs"],
+  },
+  {
+    q: "what does Jack secretly call you when no one's listening?",
+    answers: ["babe", "baby", "my baby"],
+    hints: ["honey", "babe", "queen"],
+  },
+  {
+    q: "what's your made-up nickname for Jack?",
+    answers: ["jacky", "jackie", "jay"],
+    hints: ["jacky", "j-man", "jackson"],
+  },
+  {
+    q: "where's our dreamland — the one we keep talking about?",
+    answers: ["zanzibar", "bora bora", "borabora", "dubai"],
+    hints: ["paris", "zanzibar", "tokyo"],
+  },
+  {
+    q: "how many kids do we keep saying we'll have? (a number)",
+    answers: ["2", "two", "3", "three"],
+    hints: ["1", "2", "5"],
+  },
+  {
+    q: "where did we first meet?",
+    answers: ["instagram", "online", "ig", "dm", "dms"],
+    hints: ["tinder", "instagram", "a wedding"],
+  },
+  {
+    q: "complete this: 'you're my favorite ___'",
+    answers: ["person", "human", "everything"],
+    hints: ["person", "headache", "snack"],
+  },
+  {
+    q: "what do I always steal from your plate?",
+    answers: ["fries", "chips", "the fries"],
+    hints: ["fries", "chicken", "dessert"],
+  },
+];
+
+const TEASES = [
+  "nope. but adorable try. 🙃",
+  "wrong — and you call yourself my girlfriend?",
+  "lol no. think harder, beautiful.",
+  "incorrect. but i love watching you guess.",
+  "that's a no. try again, smarty pants.",
+  "wrong wrong wrong. cute though.",
+];
+
+function norm(s: string) {
+  return s.trim().toLowerCase().replace(/[.!?'"`]/g, "");
+}
 
 const ENTRIES = [
   {
@@ -34,6 +94,12 @@ const ENTRIES = [
 export function Diary() {
   const [startMs, setStartMs] = useState<number | null>(null);
   const [now, setNow] = useState(Date.now());
+  const [unlocked, setUnlocked] = useState(false);
+  const [qIndex] = useState(() => Math.floor(Math.random() * QUESTIONS.length));
+  const [guess, setGuess] = useState("");
+  const [fails, setFails] = useState(0);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [showHints, setShowHints] = useState(false);
 
   useEffect(() => {
     let s = Number(localStorage.getItem(KEY));
@@ -42,13 +108,36 @@ export function Diary() {
       localStorage.setItem(KEY, String(s));
     }
     setStartMs(s);
+    if (localStorage.getItem(UNLOCK_KEY) === "true") setUnlocked(true);
+    const f = Number(localStorage.getItem(FAILS_KEY) || "0");
+    if (!Number.isNaN(f)) {
+      setFails(f);
+      if (f >= 5) setShowHints(true);
+    }
     const id = setInterval(() => setNow(Date.now()), 60_000);
     return () => clearInterval(id);
   }, []);
 
   const daysSince = startMs ? Math.floor((now - startMs) / 86_400_000) + 1 : 1;
-  // TEMP: unlock everything — we'll re-introduce a more romantic locking mechanism later.
-  const UNLOCK_ALL = true;
+  const current = QUESTIONS[qIndex];
+
+  const tryUnlock = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!guess.trim()) return;
+    const ok = current.answers.some((a) => norm(a) === norm(guess));
+    if (ok) {
+      setUnlocked(true);
+      localStorage.setItem(UNLOCK_KEY, "true");
+      setFeedback("you got it. i knew you would. welcome in. ❤");
+    } else {
+      const next = fails + 1;
+      setFails(next);
+      localStorage.setItem(FAILS_KEY, String(next));
+      setFeedback(TEASES[next % TEASES.length]);
+      if (next >= 5) setShowHints(true);
+      setGuess("");
+    }
+  };
 
   return (
     <section className="relative px-6 py-32">
@@ -66,10 +155,62 @@ export function Diary() {
           </p>
         </div>
 
+        {!unlocked && (
+          <motion.form
+            onSubmit={tryUnlock}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="mx-auto mt-12 max-w-xl rounded-3xl border border-primary/30 bg-card/70 p-8 shadow-xl backdrop-blur-md"
+          >
+            <p className="font-script text-lg text-primary/80">prove it's you</p>
+            <p className="mt-2 font-display text-xl text-foreground/90">{current.q}</p>
+            <input
+              value={guess}
+              onChange={(e) => setGuess(e.target.value)}
+              maxLength={40}
+              placeholder="type your answer…"
+              className="mt-5 w-full rounded-2xl border border-primary/25 bg-background/50 px-5 py-4 font-display text-lg outline-none focus:border-primary"
+            />
+            <div className="mt-5 flex items-center justify-between gap-3">
+              <p className="font-script text-sm text-muted-foreground">
+                {feedback ?? `${fails} wrong guess${fails === 1 ? "" : "es"} so far`}
+              </p>
+              <button
+                type="submit"
+                className="rounded-full bg-primary px-6 py-3 font-display text-base font-semibold text-primary-foreground shadow-lg transition-all hover:scale-105"
+              >
+                unlock
+              </button>
+            </div>
+            {showHints && (
+              <div className="mt-6 rounded-2xl border border-primary/20 bg-primary/5 p-4">
+                <p className="font-script text-sm text-primary/80">
+                  okay fine — a little help. one of these is right:
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {current.hints.map((h) => (
+                    <button
+                      key={h}
+                      type="button"
+                      onClick={() => setGuess(h)}
+                      className="rounded-full border border-primary/30 bg-background/60 px-4 py-2 font-display text-sm transition-all hover:scale-105 hover:bg-primary/10"
+                    >
+                      {h}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </motion.form>
+        )}
+
         <div className="mt-14 space-y-6">
           {ENTRIES.map((e, i) => {
-            const unlocked = UNLOCK_ALL || daysSince >= e.day;
+            const entryOpen = unlocked && daysSince >= e.day;
             const daysLeft = e.day - daysSince;
+            const lockedReason = !unlocked ? "answer the question above" : `unlocks in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`;
             return (
               <motion.div
                 key={e.day}
@@ -78,34 +219,34 @@ export function Diary() {
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ delay: i * 0.06, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
                 className={`relative overflow-hidden rounded-3xl border p-8 backdrop-blur-md md:p-10 ${
-                  unlocked
+                  entryOpen
                     ? "border-primary/30 bg-card/70 shadow-xl"
                     : "border-primary/10 bg-card/30"
                 }`}
               >
                 <div className="flex items-baseline justify-between gap-4">
                   <p className="font-script text-xl text-primary/70">day {e.day}</p>
-                  {!unlocked && (
+                  {!entryOpen && (
                     <p className="font-script text-sm text-muted-foreground">
-                      🔒 unlocks in {daysLeft} day{daysLeft === 1 ? "" : "s"}
+                      🔒 {lockedReason}
                     </p>
                   )}
                 </div>
                 <h3
                   className={`mt-2 font-display text-2xl font-semibold md:text-3xl ${
-                    unlocked ? "text-foreground" : "text-foreground/40 blur-sm"
+                    entryOpen ? "text-foreground" : "text-foreground/40 blur-sm"
                   }`}
                 >
                   {e.title}
                 </h3>
                 <p
                   className={`mt-4 font-display text-lg leading-relaxed transition-all ${
-                    unlocked ? "text-foreground/90" : "select-none text-foreground/30 blur-md"
+                    entryOpen ? "text-foreground/90" : "select-none text-foreground/30 blur-md"
                   }`}
                 >
                   {e.body}
                 </p>
-                {unlocked && (
+                {entryOpen && (
                   <p className="mt-6 text-right font-script text-lg text-primary">— Jack</p>
                 )}
               </motion.div>
