@@ -12,6 +12,7 @@ import { Promises } from "@/components/Promises";
 import { OpenWhen } from "@/components/OpenWhen";
 import { Letter } from "@/components/Letter";
 import { LittleThings } from "@/components/LittleThings";
+import { Headlines } from "@/components/Headlines";
 import { Invite } from "@/components/Invite";
 import { Countdown } from "@/components/Countdown";
 import { Finale } from "@/components/Finale";
