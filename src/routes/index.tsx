@@ -56,6 +56,7 @@ function Index() {
       <Dealbreakers />
       <Reasons />
       <Promises />
+      <Headlines />
       <MapOfYou />
       <OpenWhen />
       <LittleThings />
