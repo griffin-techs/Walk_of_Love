@@ -1,9 +1,9 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const KEY = "sheila_diary_start";
-const UNLOCK_KEY = "sheila_diary_unlocked";
-const FAILS_KEY = "sheila_diary_fails";
+const UNLOCK_PREFIX = "sheila_diary_unlocked_";
+const FAILS_PREFIX = "sheila_diary_fails_";
 
 // 💌 The unlock quiz — questions only Sheila would know.
 // Each question accepts multiple spellings/variants. Edit freely.
@@ -94,12 +94,15 @@ const ENTRIES = [
 export function Diary() {
   const [startMs, setStartMs] = useState<number | null>(null);
   const [now, setNow] = useState(Date.now());
-  const [unlocked, setUnlocked] = useState(false);
-  const [qIndex] = useState(() => Math.floor(Math.random() * QUESTIONS.length));
-  const [guess, setGuess] = useState("");
-  const [fails, setFails] = useState(0);
-  const [feedback, setFeedback] = useState<string | null>(null);
-  const [showHints, setShowHints] = useState(false);
+  // each entry gets its own random question + independent unlock state
+  const [qIndices] = useState(() =>
+    ENTRIES.map(() => Math.floor(Math.random() * QUESTIONS.length))
+  );
+  const [unlocked, setUnlocked] = useState<boolean[]>(() => ENTRIES.map(() => false));
+  const [open, setOpen] = useState<boolean[]>(() => ENTRIES.map((_, i) => i === 0));
+  const [guesses, setGuesses] = useState<string[]>(() => ENTRIES.map(() => ""));
+  const [fails, setFails] = useState<number[]>(() => ENTRIES.map(() => 0));
+  const [feedback, setFeedback] = useState<(string | null)[]>(() => ENTRIES.map(() => null));
 
   useEffect(() => {
     let s = Number(localStorage.getItem(KEY));
@@ -108,34 +111,37 @@ export function Diary() {
       localStorage.setItem(KEY, String(s));
     }
     setStartMs(s);
-    if (localStorage.getItem(UNLOCK_KEY) === "true") setUnlocked(true);
-    const f = Number(localStorage.getItem(FAILS_KEY) || "0");
-    if (!Number.isNaN(f)) {
-      setFails(f);
-      if (f >= 5) setShowHints(true);
-    }
+    setUnlocked(ENTRIES.map((_, i) => localStorage.getItem(UNLOCK_PREFIX + i) === "true"));
+    setFails(
+      ENTRIES.map((_, i) => {
+        const f = Number(localStorage.getItem(FAILS_PREFIX + i) || "0");
+        return Number.isNaN(f) ? 0 : f;
+      })
+    );
     const id = setInterval(() => setNow(Date.now()), 60_000);
     return () => clearInterval(id);
   }, []);
 
   const daysSince = startMs ? Math.floor((now - startMs) / 86_400_000) + 1 : 1;
-  const current = QUESTIONS[qIndex];
 
-  const tryUnlock = (e: React.FormEvent) => {
+  const update = <T,>(arr: T[], i: number, v: T) => arr.map((x, j) => (j === i ? v : x));
+
+  const tryUnlock = (i: number) => (e: React.FormEvent) => {
     e.preventDefault();
+    const guess = guesses[i];
     if (!guess.trim()) return;
-    const ok = current.answers.some((a) => norm(a) === norm(guess));
+    const q = QUESTIONS[qIndices[i]];
+    const ok = q.answers.some((a) => norm(a) === norm(guess));
     if (ok) {
-      setUnlocked(true);
-      localStorage.setItem(UNLOCK_KEY, "true");
-      setFeedback("you got it. i knew you would. welcome in. ❤");
+      setUnlocked((u) => update(u, i, true));
+      localStorage.setItem(UNLOCK_PREFIX + i, "true");
+      setFeedback((f) => update(f, i, "you got it. i knew you would. ❤"));
     } else {
-      const next = fails + 1;
-      setFails(next);
-      localStorage.setItem(FAILS_KEY, String(next));
-      setFeedback(TEASES[next % TEASES.length]);
-      if (next >= 5) setShowHints(true);
-      setGuess("");
+      const next = fails[i] + 1;
+      setFails((f) => update(f, i, next));
+      localStorage.setItem(FAILS_PREFIX + i, String(next));
+      setFeedback((f) => update(f, i, TEASES[next % TEASES.length]));
+      setGuesses((g) => update(g, i, ""));
     }
   };
 
@@ -145,72 +151,22 @@ export function Diary() {
         <div className="text-center">
           <p className="font-script text-2xl text-primary">the diary i'm not supposed to show you</p>
           <h2 className="mt-2 font-display text-5xl md:text-6xl font-bold text-gradient-hero">
-            One entry. Then wait.
+            Every page is a question.
           </h2>
           <p className="mt-4 text-muted-foreground">
-            New pages unlock with time. Come back. They're worth it.
+            Tap unlock. Prove it's you. Read what's underneath.
           </p>
           <p className="mt-2 font-script text-lg text-primary/70">
             day {daysSince} since you first opened this
           </p>
         </div>
 
-        {!unlocked && (
-          <motion.form
-            onSubmit={tryUnlock}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="mx-auto mt-12 max-w-xl rounded-3xl border border-primary/30 bg-card/70 p-8 shadow-xl backdrop-blur-md"
-          >
-            <p className="font-script text-lg text-primary/80">prove it's you</p>
-            <p className="mt-2 font-display text-xl text-foreground/90">{current.q}</p>
-            <input
-              value={guess}
-              onChange={(e) => setGuess(e.target.value)}
-              maxLength={40}
-              placeholder="type your answer…"
-              className="mt-5 w-full rounded-2xl border border-primary/25 bg-background/50 px-5 py-4 font-display text-lg outline-none focus:border-primary"
-            />
-            <div className="mt-5 flex items-center justify-between gap-3">
-              <p className="font-script text-sm text-muted-foreground">
-                {feedback ?? `${fails} wrong guess${fails === 1 ? "" : "es"} so far`}
-              </p>
-              <button
-                type="submit"
-                className="rounded-full bg-primary px-6 py-3 font-display text-base font-semibold text-primary-foreground shadow-lg transition-all hover:scale-105"
-              >
-                unlock
-              </button>
-            </div>
-            {showHints && (
-              <div className="mt-6 rounded-2xl border border-primary/20 bg-primary/5 p-4">
-                <p className="font-script text-sm text-primary/80">
-                  okay fine — a little help. one of these is right:
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {current.hints.map((h) => (
-                    <button
-                      key={h}
-                      type="button"
-                      onClick={() => setGuess(h)}
-                      className="rounded-full border border-primary/30 bg-background/60 px-4 py-2 font-display text-sm transition-all hover:scale-105 hover:bg-primary/10"
-                    >
-                      {h}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </motion.form>
-        )}
-
         <div className="mt-14 space-y-6">
           {ENTRIES.map((e, i) => {
-            const entryOpen = unlocked && daysSince >= e.day;
-            const daysLeft = e.day - daysSince;
-            const lockedReason = !unlocked ? "answer the question above" : `unlocks in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`;
+            const isOpen = unlocked[i];
+            const isAsking = open[i] && !isOpen;
+            const q = QUESTIONS[qIndices[i]];
+            const showHints = fails[i] >= 5;
             return (
               <motion.div
                 key={e.day}
@@ -219,36 +175,105 @@ export function Diary() {
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ delay: i * 0.06, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
                 className={`relative overflow-hidden rounded-3xl border p-8 backdrop-blur-md md:p-10 ${
-                  entryOpen
+                  isOpen
                     ? "border-primary/30 bg-card/70 shadow-xl"
                     : "border-primary/10 bg-card/30"
                 }`}
               >
                 <div className="flex items-baseline justify-between gap-4">
                   <p className="font-script text-xl text-primary/70">day {e.day}</p>
-                  {!entryOpen && (
-                    <p className="font-script text-sm text-muted-foreground">
-                      🔒 {lockedReason}
-                    </p>
+                  {!isOpen && (
+                    <p className="font-script text-sm text-muted-foreground">🔒 locked</p>
                   )}
                 </div>
                 <h3
                   className={`mt-2 font-display text-2xl font-semibold md:text-3xl ${
-                    entryOpen ? "text-foreground" : "text-foreground/40 blur-sm"
+                    isOpen ? "text-foreground" : "text-foreground/40 blur-sm"
                   }`}
                 >
                   {e.title}
                 </h3>
                 <p
                   className={`mt-4 font-display text-lg leading-relaxed transition-all ${
-                    entryOpen ? "text-foreground/90" : "select-none text-foreground/30 blur-md"
+                    isOpen ? "text-foreground/90" : "select-none text-foreground/30 blur-md"
                   }`}
                 >
                   {e.body}
                 </p>
-                {entryOpen && (
+                {isOpen && (
                   <p className="mt-6 text-right font-script text-lg text-primary">— Jack</p>
                 )}
+
+                <AnimatePresence initial={false}>
+                  {!isOpen && !isAsking && (
+                    <motion.div
+                      key="btn"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="mt-6 flex justify-center"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setOpen((o) => update(o, i, true))}
+                        className="rounded-full bg-primary px-6 py-3 font-display text-base font-semibold text-primary-foreground shadow-lg transition-all hover:scale-105"
+                      >
+                        unlock to see ❤
+                      </button>
+                    </motion.div>
+                  )}
+
+                  {isAsking && (
+                    <motion.form
+                      key="form"
+                      onSubmit={tryUnlock(i)}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="mt-6 rounded-2xl border border-primary/25 bg-background/40 p-5"
+                    >
+                      <p className="font-script text-sm text-primary/80">prove it's you</p>
+                      <p className="mt-1 font-display text-lg text-foreground/90">{q.q}</p>
+                      <input
+                        value={guesses[i]}
+                        onChange={(ev) => setGuesses((g) => update(g, i, ev.target.value))}
+                        maxLength={40}
+                        placeholder="type your answer…"
+                        className="mt-4 w-full rounded-xl border border-primary/25 bg-background/50 px-4 py-3 font-display text-base outline-none focus:border-primary"
+                      />
+                      <div className="mt-4 flex items-center justify-between gap-3">
+                        <p className="font-script text-sm text-muted-foreground">
+                          {feedback[i] ?? `${fails[i]} wrong guess${fails[i] === 1 ? "" : "es"}`}
+                        </p>
+                        <button
+                          type="submit"
+                          className="rounded-full bg-primary px-5 py-2.5 font-display text-sm font-semibold text-primary-foreground shadow transition-all hover:scale-105"
+                        >
+                          unlock
+                        </button>
+                      </div>
+                      {showHints && (
+                        <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 p-3">
+                          <p className="font-script text-xs text-primary/80">
+                            okay fine — one of these is right:
+                          </p>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {q.hints.map((h) => (
+                              <button
+                                key={h}
+                                type="button"
+                                onClick={() => setGuesses((g) => update(g, i, h))}
+                                className="rounded-full border border-primary/30 bg-background/60 px-3 py-1.5 font-display text-xs transition-all hover:scale-105 hover:bg-primary/10"
+                              >
+                                {h}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </motion.form>
+                  )}
+                </AnimatePresence>
               </motion.div>
             );
           })}
