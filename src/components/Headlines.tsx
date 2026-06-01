@@ -89,6 +89,17 @@ function seededRandom(seed: number) {
 export function Headlines() {
   const [mounted, setMounted] = useState(false);
   const [index, setIndex] = useState(0);
+  const [confetti, setConfetti] = useState<{ id: number; x: number; emoji: string }[]>([]);
+
+  const burstConfetti = () => {
+    const burst = Array.from({ length: 32 }).map((_, i) => ({
+      id: Date.now() + i,
+      x: Math.random() * 100,
+      emoji: ["❤️", "💖", "✨", "🩷", "🌸", "💫"][i % 6],
+    }));
+    setConfetti(burst);
+    setTimeout(() => setConfetti([]), 3500);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -105,6 +116,9 @@ export function Headlines() {
     }
     setIndex(pick);
     localStorage.setItem(KEY, String(pick));
+    // celebrate the fresh headline on reload
+    const t = setTimeout(() => burstConfetti(), 400);
+    return () => clearTimeout(t);
   }, []);
 
   const h = HEADLINES[index];
@@ -116,10 +130,26 @@ export function Headlines() {
     } while (next === index);
     setIndex(next);
     localStorage.setItem(KEY, String(next));
+    burstConfetti();
   };
 
   return (
     <section className="relative px-6 py-32">
+      {/* confetti hearts on reload/shuffle */}
+      <div className="pointer-events-none fixed inset-0 z-[90]">
+        {confetti.map((c) => (
+          <motion.span
+            key={c.id}
+            initial={{ y: "110vh", opacity: 1, rotate: 0 }}
+            animate={{ y: "-10vh", opacity: 0, rotate: 360 }}
+            transition={{ duration: 3.2, ease: "easeOut" }}
+            className="absolute text-2xl"
+            style={{ left: `${c.x}vw` }}
+          >
+            {c.emoji}
+          </motion.span>
+        ))}
+      </div>
       <div className="mx-auto max-w-3xl">
         <div className="text-center">
           <p className="font-script text-2xl text-primary">from the future</p>
