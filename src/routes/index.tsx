@@ -29,6 +29,7 @@ import { ReplyToJack } from "@/components/ReplyToJack";
 import { EasterEggs } from "@/components/EasterEggs";
 import { PhotoAlbum } from "@/components/PhotoAlbum";
 import { SideNav } from "@/components/SideNav";
+import { Mirror } from "@/components/Mirror";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -68,6 +69,7 @@ function Index() {
       <div id="letter"><Letter /></div>
       <div id="diary"><Diary /></div>
       <div id="photo-album"><PhotoAlbum /></div>
+      <div id="mirror"><Mirror /></div>
       <div id="reply-to-jack"><ReplyToJack /></div>
       <div id="invite"><Invite plan={plan} /></div>
       <div id="countdown"><Countdown plan={plan} /></div>
