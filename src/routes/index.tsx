@@ -27,6 +27,8 @@ import { Diary } from "@/components/Diary";
 import { AlmostTexted } from "@/components/AlmostTexted";
 import { ReplyToJack } from "@/components/ReplyToJack";
 import { EasterEggs } from "@/components/EasterEggs";
+import { PhotoAlbum } from "@/components/PhotoAlbum";
+import { SideNav } from "@/components/SideNav";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -46,28 +48,30 @@ function Index() {
       <MusicToggle />
       <RainToggle />
       <EasterEggs />
-      <Hero />
-      <TodaysNote />
-      <Interrogation answers={answers} setAnswers={setAnswers} />
-      <DatePlanner plan={plan} setPlan={setPlan} />
-      <Vacation picks={destinations} setPicks={setDestinations} />
-      <LoveQuiz />
-      <Compatibility answers={answers} />
-      <Dealbreakers />
-      <Reasons />
-      <Promises />
-      <Headlines />
-      <MapOfYou />
-      <OpenWhen />
-      <LittleThings />
-      <AlmostTexted />
-      <Soundtrack />
-      <Letter />
-      <Diary />
-      <ReplyToJack />
-      <Invite plan={plan} />
-      <Countdown plan={plan} />
-      <Finale answers={answers} plan={plan} destinations={destinations} />
+      <SideNav />
+      <div id="hero"><Hero /></div>
+      <div id="todays-note"><TodaysNote /></div>
+      <div id="interrogation"><Interrogation answers={answers} setAnswers={setAnswers} /></div>
+      <div id="date-planner"><DatePlanner plan={plan} setPlan={setPlan} /></div>
+      <div id="vacation"><Vacation picks={destinations} setPicks={setDestinations} /></div>
+      <div id="love-quiz"><LoveQuiz /></div>
+      <div id="compatibility"><Compatibility answers={answers} /></div>
+      <div id="dealbreakers"><Dealbreakers /></div>
+      <div id="reasons"><Reasons /></div>
+      <div id="promises"><Promises /></div>
+      <div id="headlines"><Headlines /></div>
+      <div id="map-of-you"><MapOfYou /></div>
+      <div id="open-when"><OpenWhen /></div>
+      <div id="little-things"><LittleThings /></div>
+      <div id="almost-texted"><AlmostTexted /></div>
+      <div id="soundtrack"><Soundtrack /></div>
+      <div id="letter"><Letter /></div>
+      <div id="diary"><Diary /></div>
+      <div id="photo-album"><PhotoAlbum /></div>
+      <div id="reply-to-jack"><ReplyToJack /></div>
+      <div id="invite"><Invite plan={plan} /></div>
+      <div id="countdown"><Countdown plan={plan} /></div>
+      <div id="finale"><Finale answers={answers} plan={plan} destinations={destinations} /></div>
     </main>
   );
 }
