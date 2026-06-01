@@ -21,6 +21,7 @@ const SECTIONS: { id: string; label: string; emoji: string }[] = [
   { id: "letter", label: "the letter", emoji: "📜" },
   { id: "diary", label: "secret diary", emoji: "🔒" },
   { id: "photo-album", label: "polaroids", emoji: "📸" },
+  { id: "mirror", label: "mirror, mirror", emoji: "🪞" },
   { id: "reply-to-jack", label: "reply to jack", emoji: "💬" },
   { id: "invite", label: "the invite", emoji: "🥂" },
   { id: "countdown", label: "countdown", emoji: "⏳" },
