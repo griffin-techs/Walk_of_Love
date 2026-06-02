@@ -167,7 +167,9 @@ export function PhotoAlbum() {
               </div>
 
               <input
-                ref={(el) => (fileRefs.current[i] = el)}
+                ref={(el) => {
+                  fileRefs.current[i] = el;
+                }}
                 type="file"
                 accept="image/*"
                 className="hidden"
