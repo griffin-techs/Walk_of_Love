@@ -26,11 +26,53 @@ Built on Lovable (TanStack Start + React + Tailwind + Lovable Cloud/Supabase).
 16. A Letter from Jack (typewriter)
 17. **Diary** — question-locked entries
 18. Reply to Jack (sends to Lovable Cloud)
-19. The Official Invite
-20. Countdown
-21. Finale
+19. Photo Album (uploadable polaroids)
+20. Mirror, Mirror (reframes negative self-talk)
+21. 🎂 Birthday Vault (auto-unlocking date-locked cards)
+22. The Official Invite
+23. Countdown
+24. Finale
 
 Plus global: floating hearts, cursor glow, music toggle, rain toggle, easter eggs (type "sheila", Konami code, moon clicks, idle whisper).
+
+---
+
+## 🧭 Side menu (left sidebar)
+
+A collapsible left-side navigation lives at the top-left corner (the ☰ button). It's **closed by default**, opens on tap, closes on `Esc` or by clicking outside.
+
+- All sections are listed in order with an emoji + label.
+- Clicking an item smooth-scrolls to that section.
+- Source: `src/components/SideNav.tsx` — edit the `SECTIONS` array there to add/rename/reorder links. Each link's `id` must match the `<div id="...">` wrapper in `src/routes/index.tsx`.
+
+---
+
+## 🎂 Birthday Vault dates (edit these!)
+
+Time-released cards in `src/components/BirthdayVault.tsx` → `CARDS` array. Each card auto-unlocks on its `month/day` (months are 1-12). Update with her real dates:
+
+| Card | Default date | What it is |
+|---|---|---|
+| her birthday | 7/14 | the big one |
+| our anniversary | 3/22 | the day she said yes to all this |
+| christmas | 12/25 | warm-light-in-the-window |
+| surprise #1 | 2/14 | valentine's, louder |
+| surprise #2 | 5/1 | just because, spring |
+| surprise #3 | 9/9 | first hoodie morning |
+| surprise #4 | 11/11 | 11:11 wish |
+
+Locked cards show a countdown and a "peek" button that only teases — they only truly unlock on the date.
+
+---
+
+## 📸 Photo Album controls
+
+Each polaroid frame in the Photo Album has a **⋯ menu** (top-right, on hover) with:
+- **Upload / Replace photo** — picks a local image, stored as base64 in `localStorage` (`photo-album-frames-v1`)
+- **Edit caption** — inline textarea + save/cancel
+- **Delete photo** — clears the image, keeps the caption + frame
+
+Tap an empty frame anywhere to open the file picker. All edits persist per-browser.
 
 ---
 
