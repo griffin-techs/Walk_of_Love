@@ -84,6 +84,18 @@ export function PhotoAlbum() {
     setMenuOpen(null);
   };
 
+  const onDownload = (i: number) => {
+    const f = frames[i];
+    if (!f.image) return;
+    const a = document.createElement("a");
+    a.href = f.image;
+    a.download = `polaroid-${i + 1}.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setMenuOpen(null);
+  };
+
   const onSaveCaption = (i: number) => {
     const next = [...frames];
     next[i] = { ...next[i], caption: draftCaption.trim() || next[i].caption };
@@ -162,6 +174,15 @@ export function PhotoAlbum() {
                       >
                         ✏️ Edit caption
                       </button>
+                      {f.image && (
+                        <button
+                          type="button"
+                          onClick={() => onDownload(i)}
+                          className="block w-full px-3 py-2 text-left text-sm hover:bg-primary/10"
+                        >
+                          ⬇️ Download photo
+                        </button>
+                      )}
                       {f.image && (
                         <button
                           type="button"
