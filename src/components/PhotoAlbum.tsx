@@ -34,6 +34,7 @@ export function PhotoAlbum() {
   const [editing, setEditing] = useState<number | null>(null);
   const [draftCaption, setDraftCaption] = useState("");
   const fileRefs = useRef<Record<number, HTMLInputElement | null>>({});
+  const menuRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   useEffect(() => {
     try {
@@ -53,10 +54,14 @@ export function PhotoAlbum() {
   };
 
   useEffect(() => {
-    const onClick = () => setMenuOpen(null);
-    document.addEventListener("click", onClick);
-    return () => document.removeEventListener("click", onClick);
-  }, []);
+    const onDown = (e: MouseEvent) => {
+      if (menuOpen === null) return;
+      const el = menuRefs.current[menuOpen];
+      if (el && !el.contains(e.target as Node)) setMenuOpen(null);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [menuOpen]);
 
   const onUpload = async (i: number, file?: File | null) => {
     if (!file) return;
@@ -115,14 +120,19 @@ export function PhotoAlbum() {
 
               {/* 3-dots menu */}
               <div
+                ref={(el) => {
+                  menuRefs.current[i] = el;
+                }}
                 className="absolute right-2 top-2 z-20"
-                onClick={(e) => e.stopPropagation()}
               >
                 <button
                   type="button"
                   aria-label="frame options"
-                  onClick={() => setMenuOpen(menuOpen === i ? null : i)}
-                  className="flex h-7 w-7 items-center justify-center rounded-full bg-black/40 text-white opacity-0 backdrop-blur transition-opacity hover:bg-black/60 group-hover:opacity-100"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMenuOpen(menuOpen === i ? null : i);
+                  }}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white shadow-md backdrop-blur transition-transform hover:scale-110 hover:bg-black/80"
                 >
                   <span className="text-lg leading-none">⋯</span>
                 </button>
