@@ -92,6 +92,7 @@ const ENTRIES = [
 ];
 
 export function Diary() {
+  const [startMs, setStartMs] = useState<number | null>(null);
   const [now, setNow] = useState(Date.now());
   // each entry gets its own random question + independent unlock state
   const [qIndices, setQIndices] = useState<number[]>(() => ENTRIES.map(() => 0));
