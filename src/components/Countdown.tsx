@@ -77,10 +77,10 @@ export function Countdown({ plan }: { plan: DatePlan }) {
           className="glass mt-12 rounded-[2rem] p-8 md:p-12"
         >
           <div className="grid grid-cols-4 gap-3 md:gap-6">
-            <Unit n={days} label="days" />
-            <Unit n={hours} label="hours" />
-            <Unit n={minutes} label="min" />
-            <Unit n={seconds} label="sec" />
+            <Unit n={mounted ? days : 0} label="days" />
+            <Unit n={mounted ? hours : 0} label="hours" />
+            <Unit n={mounted ? minutes : 0} label="min" />
+            <Unit n={mounted ? seconds : 0} label="sec" />
           </div>
 
           <div className="mt-10 h-8 overflow-hidden">
