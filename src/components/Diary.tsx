@@ -116,6 +116,11 @@ export function Diary() {
         return Number.isNaN(f) ? 0 : f;
       })
     );
+    // deterministic "random" based on day-of-year so SSR + client match
+    const d = new Date();
+    const start = new Date(d.getFullYear(), 0, 0);
+    const day = Math.floor((d.getTime() - start.getTime()) / 86_400_000);
+    setQIndices(ENTRIES.map((_, i) => (day + i * 7) % QUESTIONS.length));
     const id = setInterval(() => setNow(Date.now()), 60_000);
     return () => clearInterval(id);
   }, []);
