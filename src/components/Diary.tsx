@@ -95,9 +95,7 @@ export function Diary() {
   const [startMs, setStartMs] = useState<number | null>(null);
   const [now, setNow] = useState(Date.now());
   // each entry gets its own random question + independent unlock state
-  const [qIndices] = useState(() =>
-    ENTRIES.map(() => Math.floor(Math.random() * QUESTIONS.length))
-  );
+  const [qIndices, setQIndices] = useState<number[]>(() => ENTRIES.map(() => 0));
   const [unlocked, setUnlocked] = useState<boolean[]>(() => ENTRIES.map(() => false));
   const [open, setOpen] = useState<boolean[]>(() => ENTRIES.map((_, i) => i === 0));
   const [guesses, setGuesses] = useState<string[]>(() => ENTRIES.map(() => ""));
@@ -118,6 +116,11 @@ export function Diary() {
         return Number.isNaN(f) ? 0 : f;
       })
     );
+    // deterministic "random" based on day-of-year so SSR + client match
+    const d = new Date();
+    const start = new Date(d.getFullYear(), 0, 0);
+    const day = Math.floor((d.getTime() - start.getTime()) / 86_400_000);
+    setQIndices(ENTRIES.map((_, i) => (day + i * 7) % QUESTIONS.length));
     const id = setInterval(() => setNow(Date.now()), 60_000);
     return () => clearInterval(id);
   }, []);

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const NOTES = [
   "you got this. seriously. i'd bet money on you.",
@@ -72,12 +72,17 @@ function indexForToday() {
 }
 
 export function TodaysNote() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const idx = useMemo(indexForToday, []);
-  const today = new Date().toLocaleDateString(undefined, {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
+  const today = mounted
+    ? new Date().toLocaleDateString(undefined, {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      })
+    : "today";
 
   return (
     <section className="relative px-6 py-32">

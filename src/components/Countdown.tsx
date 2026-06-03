@@ -15,10 +15,13 @@ const MICRO = [
 
 export function Countdown({ plan }: { plan: DatePlan }) {
   const target = buildTarget(plan);
-  const [now, setNow] = useState(() => Date.now());
+  const [mounted, setMounted] = useState(false);
+  const [now, setNow] = useState(() => Date.UTC(2000, 0, 1));
   const [microIdx, setMicroIdx] = useState(0);
 
   useEffect(() => {
+    setMounted(true);
+    setNow(Date.now());
     const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
   }, []);
@@ -74,10 +77,10 @@ export function Countdown({ plan }: { plan: DatePlan }) {
           className="glass mt-12 rounded-[2rem] p-8 md:p-12"
         >
           <div className="grid grid-cols-4 gap-3 md:gap-6">
-            <Unit n={days} label="days" />
-            <Unit n={hours} label="hours" />
-            <Unit n={minutes} label="min" />
-            <Unit n={seconds} label="sec" />
+            <Unit n={mounted ? days : 0} label="days" />
+            <Unit n={mounted ? hours : 0} label="hours" />
+            <Unit n={mounted ? minutes : 0} label="min" />
+            <Unit n={mounted ? seconds : 0} label="sec" />
           </div>
 
           <div className="mt-10 h-8 overflow-hidden">

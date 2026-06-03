@@ -100,10 +100,13 @@ function daysUntil(card: VaultCard, now: Date) {
 }
 
 export function BirthdayVault() {
-  const [now, setNow] = useState(() => new Date());
+  const [mounted, setMounted] = useState(false);
+  const [now, setNow] = useState(() => new Date(2000, 0, 1));
   const [opened, setOpened] = useState<string | null>(null);
 
   useEffect(() => {
+    setMounted(true);
+    setNow(new Date());
     const t = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(t);
   }, []);
