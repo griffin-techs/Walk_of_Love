@@ -29,9 +29,12 @@ Built on Lovable (TanStack Start + React + Tailwind + Lovable Cloud/Supabase).
 19. Photo Album (uploadable polaroids)
 20. Mirror, Mirror (reframes negative self-talk)
 21. 🎂 Birthday Vault (auto-unlocking date-locked cards)
-22. The Official Invite
-23. Countdown
-24. Finale
+22. 💝 Love Language Translator (5-question quiz → Jack-behavior translation)
+23. 🏛️ Inside Jokes Museum (clickable artifact cards)
+24. 🕰️ The Time Capsule (write-now, auto-unlock-on-date letters)
+25. The Official Invite
+26. Countdown
+27. Finale
 
 Plus global: floating hearts, cursor glow, music toggle, rain toggle, easter eggs (type "sheila", Konami code, moon clicks, idle whisper).
 
