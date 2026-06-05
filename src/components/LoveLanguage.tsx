@@ -114,6 +114,81 @@ const QUESTIONS: { q: string; options: { label: string; lang: Lang }[] }[] = [
   },
 ];
 
+const EXTRA_QUESTIONS: { q: string; options: { label: string; lang: Lang }[] }[] = [
+  {
+    q: "after a hard day, what undoes the knot in your chest?",
+    options: [
+      { label: "him whispering 'you did so well today, my love'", lang: "words" },
+      { label: "him quietly running you a bath without asking", lang: "acts" },
+      { label: "him sitting on the floor with you while you vent", lang: "time" },
+      { label: "him pulling you into his chest until you exhale", lang: "touch" },
+      { label: "him handing you your favourite chocolate at the door", lang: "gifts" },
+    ],
+  },
+  {
+    q: "the way you secretly want to be missed is…",
+    options: [
+      { label: "a text that says 'the day is quieter without you'", lang: "words" },
+      { label: "coming home to find he tidied your side of the room", lang: "acts" },
+      { label: "him driving an hour just to have dinner with you", lang: "time" },
+      { label: "him holding your face the second you walk in", lang: "touch" },
+      { label: "a little something on your pillow, no occasion", lang: "gifts" },
+    ],
+  },
+  {
+    q: "in bed, just before sleep, you want…",
+    options: [
+      { label: "him telling you the thing he loved about you today", lang: "words" },
+      { label: "him plugging your phone in because you forgot again", lang: "acts" },
+      { label: "him staying awake a little longer to keep talking", lang: "time" },
+      { label: "his arm across your waist, his nose at your shoulder", lang: "touch" },
+      { label: "the little note he tucked under your pillow", lang: "gifts" },
+    ],
+  },
+  {
+    q: "the thing that would make you cry (in the good way) is…",
+    options: [
+      { label: "a voice note from him you weren't expecting", lang: "words" },
+      { label: "him fixing the thing you'd been quietly worrying about", lang: "acts" },
+      { label: "him showing up unannounced just because he missed you", lang: "time" },
+      { label: "him kissing your forehead like it's a promise", lang: "touch" },
+      { label: "the way he wrapped a gift you didn't know he noticed you wanted", lang: "gifts" },
+    ],
+  },
+  {
+    q: "you feel most his when…",
+    options: [
+      { label: "he calls you 'my Sheila' in front of his people", lang: "words" },
+      { label: "he carries the heavy thing before you even reach for it", lang: "acts" },
+      { label: "his calendar quietly bends to make room for you", lang: "time" },
+      { label: "his hand finds the small of your back in a crowd", lang: "touch" },
+      { label: "he remembers the tiny thing you said in March", lang: "gifts" },
+    ],
+  },
+  {
+    q: "the small daily ritual you'd miss the most is…",
+    options: [
+      { label: "his 'good morning, beautiful' before anything else", lang: "words" },
+      { label: "him making your coffee exactly how you like it", lang: "acts" },
+      { label: "the ten quiet minutes before the day starts, together", lang: "time" },
+      { label: "the way he kisses your shoulder walking past", lang: "touch" },
+      { label: "the random flowers, on a random tuesday, for no reason", lang: "gifts" },
+    ],
+  },
+  {
+    q: "if he could only do ONE thing forever, you'd pick…",
+    options: [
+      { label: "tell you, out loud, what he sees in you", lang: "words" },
+      { label: "lighten your load without making a show of it", lang: "acts" },
+      { label: "give you his undivided, phone-down attention", lang: "time" },
+      { label: "hold you like you might disappear if he doesn't", lang: "touch" },
+      { label: "keep noticing the little things and bringing them home", lang: "gifts" },
+    ],
+  },
+];
+
+QUESTIONS.push(...EXTRA_QUESTIONS);
+
 function tally(answers: Lang[]): Lang {
   const counts: Record<Lang, number> = { words: 0, acts: 0, time: 0, touch: 0, gifts: 0 };
   answers.forEach((a) => counts[a]++);
