@@ -41,6 +41,17 @@ export function Universe() {
 
   const handleSkyClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!skyRef.current) return;
+    // if a star card is open, clicking anywhere on the sky just closes it
+    if (hover) {
+      setHover(null);
+      return;
+    }
+    // also dismiss any pending star composer with an outside click
+    if (pending) {
+      setPending(null);
+      setMemory("");
+      return;
+    }
     const rect = skyRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
