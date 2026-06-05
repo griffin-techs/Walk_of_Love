@@ -26,6 +26,7 @@ const SECTIONS: { id: string; label: string; emoji: string }[] = [
   { id: "love-language", label: "love language", emoji: "💝" },
   { id: "jokes-museum", label: "inside jokes museum", emoji: "🏛️" },
   { id: "time-capsule", label: "time capsule", emoji: "🕰️" },
+  { id: "universe", label: "our universe", emoji: "🌌" },
   { id: "reply-to-jack", label: "reply to jack", emoji: "💬" },
   { id: "invite", label: "the invite", emoji: "🥂" },
   { id: "countdown", label: "countdown", emoji: "⏳" },
