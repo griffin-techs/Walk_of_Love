@@ -189,35 +189,48 @@ const EXTRA_QUESTIONS: { q: string; options: { label: string; lang: Lang }[] }[]
 
 QUESTIONS.push(...EXTRA_QUESTIONS);
 
-function tally(answers: Lang[]): Lang {
+function tally(answers: Lang[][]): { lang: Lang; count: number }[] {
   const counts: Record<Lang, number> = { words: 0, acts: 0, time: 0, touch: 0, gifts: 0 };
-  answers.forEach((a) => counts[a]++);
-  return (Object.keys(counts) as Lang[]).sort((a, b) => counts[b] - counts[a])[0];
+  answers.flat().forEach((a) => counts[a]++);
+  return (Object.keys(counts) as Lang[])
+    .map((lang) => ({ lang, count: counts[lang] }))
+    .filter((x) => x.count > 0)
+    .sort((a, b) => b.count - a.count);
 }
 
-const STORAGE_KEY = "love-language-result-v1";
+const STORAGE_KEY = "love-language-result-v2";
 
 export function LoveLanguage() {
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<Lang[]>([]);
-  const [result, setResult] = useState<Lang | null>(null);
+  const [answers, setAnswers] = useState<Lang[][]>([]);
+  const [current, setCurrent] = useState<Lang[]>([]);
+  const [result, setResult] = useState<{ lang: Lang; count: number }[] | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved && (saved in LANGS)) setResult(saved as Lang);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length) setResult(parsed);
+      }
     } catch {}
   }, []);
 
-  const pick = (lang: Lang) => {
-    const next = [...answers, lang];
-    setAnswers(next);
-    if (next.length === QUESTIONS.length) {
-      const r = tally(next);
+  const toggle = (lang: Lang) => {
+    setCurrent((c) => (c.includes(lang) ? c.filter((l) => l !== lang) : [...c, lang]));
+  };
+
+  const next = () => {
+    if (current.length === 0) return;
+    const all = [...answers, current];
+    setAnswers(all);
+    setCurrent([]);
+    if (all.length === QUESTIONS.length) {
+      const r = tally(all);
       setResult(r);
-      try { localStorage.setItem(STORAGE_KEY, r); } catch {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(r)); } catch {}
     } else {
       setStep(step + 1);
     }
@@ -226,6 +239,7 @@ export function LoveLanguage() {
   const retake = () => {
     setStep(0);
     setAnswers([]);
+    setCurrent([]);
     setResult(null);
     try { localStorage.removeItem(STORAGE_KEY); } catch {}
   };
@@ -263,17 +277,45 @@ export function LoveLanguage() {
                   </div>
                 </div>
                 <p className="font-display text-2xl text-foreground">{QUESTIONS[step].q}</p>
+                <p className="mt-1 text-xs italic text-muted-foreground">pick as many as feel true — at least one.</p>
                 <div className="mt-6 flex flex-col gap-3">
-                  {QUESTIONS[step].options.map((o) => (
-                    <button
-                      key={o.label}
-                      type="button"
-                      onClick={() => pick(o.lang)}
-                      className="rounded-2xl border border-primary/20 bg-background/40 px-5 py-4 text-left font-display text-base text-foreground/90 transition-all hover:scale-[1.02] hover:bg-primary/10 hover:border-primary/40"
-                    >
-                      {o.label}
-                    </button>
-                  ))}
+                  {QUESTIONS[step].options.map((o, i) => {
+                    const selected = current.includes(o.lang);
+                    return (
+                      <button
+                        key={`${o.label}-${i}`}
+                        type="button"
+                        onClick={() => toggle(o.lang)}
+                        className={`flex items-center gap-3 rounded-2xl border px-5 py-4 text-left font-display text-base transition-all hover:scale-[1.01] ${
+                          selected
+                            ? "border-primary/60 bg-primary/15 text-foreground shadow-[var(--glow-pink)]"
+                            : "border-primary/20 bg-background/40 text-foreground/90 hover:bg-primary/10 hover:border-primary/40"
+                        }`}
+                      >
+                        <span
+                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
+                            selected ? "border-primary bg-primary text-primary-foreground" : "border-primary/40 bg-background/40"
+                          }`}
+                        >
+                          {selected && <span className="text-[10px]">❤</span>}
+                        </span>
+                        <span>{o.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="mt-6 flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">
+                    {current.length} selected
+                  </span>
+                  <button
+                    type="button"
+                    onClick={next}
+                    disabled={current.length === 0}
+                    className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground shadow-md transition disabled:opacity-40 hover:scale-105"
+                  >
+                    {step === QUESTIONS.length - 1 ? "see my results ✨" : "next →"}
+                  </button>
                 </div>
               </motion.div>
             )}
@@ -287,30 +329,54 @@ export function LoveLanguage() {
                 className="rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5 p-8 shadow-2xl backdrop-blur-md md:p-10"
               >
                 <div className="text-center">
-                  <div className="text-6xl">{LANGS[result].emoji}</div>
-                  <p className="mt-3 font-script text-2xl text-primary">your love language is</p>
-                  <h3 className="mt-1 font-display text-4xl font-bold text-gradient-hero md:text-5xl">
-                    {LANGS[result].name}
+                  <div className="text-5xl">
+                    {result.map((r) => LANGS[r.lang].emoji).join(" ")}
+                  </div>
+                  <p className="mt-3 font-script text-2xl text-primary">your love language is a blend of</p>
+                  <h3 className="mt-1 font-display text-3xl font-bold text-gradient-hero md:text-4xl">
+                    {result.map((r) => LANGS[r.lang].name).join(" · ")}
                   </h3>
-                  <p className="mt-2 italic text-muted-foreground">{LANGS[result].tagline}</p>
+                  <p className="mt-2 italic text-muted-foreground">
+                    {result[0] && LANGS[result[0].lang].tagline}
+                  </p>
                 </div>
 
-                <div className="mt-8">
-                  <p className="text-center font-script text-xl text-primary">so here's what to watch for…</p>
-                  <ul className="mt-4 space-y-3">
-                    {LANGS[result].jackDoes.map((line, i) => (
-                      <motion.li
-                        key={i}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 + i * 0.15 }}
-                        className="flex gap-3 rounded-2xl border border-primary/15 bg-background/30 p-4 font-display text-foreground/90"
-                      >
-                        <span className="text-primary">❤</span>
-                        <span>jack {line}</span>
-                      </motion.li>
-                    ))}
-                  </ul>
+                <div className="mt-10 space-y-8">
+                  {result.map((r, idx) => (
+                    <motion.div
+                      key={r.lang}
+                      initial={{ opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 + idx * 0.15 }}
+                      className="rounded-2xl border border-primary/20 bg-background/40 p-5"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="text-3xl">{LANGS[r.lang].emoji}</span>
+                          <div>
+                            <p className="font-display text-xl font-bold text-foreground">
+                              {LANGS[r.lang].name}
+                            </p>
+                            <p className="font-script text-sm text-primary/80">{LANGS[r.lang].tagline}</p>
+                          </div>
+                        </div>
+                        <span className="rounded-full border border-primary/30 px-3 py-1 text-[10px] uppercase tracking-widest text-muted-foreground">
+                          {r.count} pick{r.count === 1 ? "" : "s"}
+                        </span>
+                      </div>
+                      <ul className="mt-4 space-y-2">
+                        {LANGS[r.lang].jackDoes.map((line, i) => (
+                          <li
+                            key={i}
+                            className="flex gap-3 rounded-xl border border-primary/10 bg-background/40 p-3 font-display text-sm text-foreground/90"
+                          >
+                            <span className="text-primary">❤</span>
+                            <span>jack {line}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  ))}
                 </div>
 
                 <div className="mt-8 flex justify-center">
