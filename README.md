@@ -32,11 +32,33 @@ Built on Lovable (TanStack Start + React + Tailwind + Lovable Cloud/Supabase).
 22. 💝 Love Language Translator (5-question quiz → Jack-behavior translation)
 23. 🏛️ Inside Jokes Museum (clickable artifact cards)
 24. 🕰️ The Time Capsule (write-now, auto-unlock-on-date letters)
-25. The Official Invite
-26. Countdown
-27. Finale
+25. 🌌 Our Universe (constellation builder of memories)
+26. 🍯 Sweetness Index (live "how loved are you today" meter)
+27. 🪄 Wish I Could… (shuffleable, favouritable, cashable soft wishes)
+28. 🧸 Comfort Mode (full-screen calming takeover)
+29. The Official Invite
+30. Countdown
+31. Finale
 
 Plus global: floating hearts, cursor glow, music toggle, rain toggle, easter eggs (type "sheila", Konami code, moon clicks, idle whisper).
+
+---
+
+## 🧸 Comfort Mode
+
+A full-screen calming takeover for the loud days. One pulse-button — **"I need you. 🤍"** — fades the world to a soft pink-violet, plays slow piano on loop, and pulses a breathing orb (4s in · 2s hold · 4s out). A single affirmation rotates every 6 seconds from `AFFIRMATIONS` in `src/components/ComfortMode.tsx`. Exit with the quiet "i'm okay now" link.
+
+Tweak the affirmation list or audio track at the top of `ComfortMode.tsx`.
+
+---
+
+## 🌱 Next up (ideas for future sections)
+
+1. 💌 **The Apology Vault** — pre-written, painfully sincere apologies from Jack for hypothetical future stupid things.
+2. 🎙 **Voice Memos from Jack** — fake voicemail inbox of typed-out love rambles styled as audio cards.
+3. 🌧 **Rainy Day Drawer** — tiny rituals (a song, a snack, a sentence) to pull out only when she's sad.
+4. 🪞 **Two Truths & a Vow** — a daily prompt where she logs two true things about today and Jack adds one promise.
+5. 🧭 **Compass of Us** — a directional dial that, whichever way she spins it, always points to something about *them* (a memory, a future plan, a private joke).
 
 ---
 
