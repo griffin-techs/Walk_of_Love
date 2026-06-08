@@ -38,6 +38,7 @@ import { Universe } from "@/components/Universe";
 import { SweetnessIndex } from "@/components/SweetnessIndex";
 import { WishICould } from "@/components/WishICould";
 import { ComfortMode } from "@/components/ComfortMode";
+import { CompassOfUs } from "@/components/CompassOfUs";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -86,6 +87,7 @@ function Index() {
       <div id="sweetness"><SweetnessIndex /></div>
       <div id="wish-i-could"><WishICould /></div>
       <div id="comfort-mode"><ComfortMode /></div>
+      <div id="compass"><CompassOfUs /></div>
       <div id="reply-to-jack"><ReplyToJack /></div>
       <div id="invite"><Invite plan={plan} /></div>
       <div id="countdown"><Countdown plan={plan} /></div>
