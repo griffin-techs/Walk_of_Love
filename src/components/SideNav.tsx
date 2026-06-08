@@ -30,6 +30,7 @@ const SECTIONS: { id: string; label: string; emoji: string }[] = [
   { id: "sweetness", label: "sweetness index", emoji: "🍯" },
   { id: "wish-i-could", label: "wish i could…", emoji: "🪄" },
   { id: "comfort-mode", label: "comfort mode", emoji: "🧸" },
+  { id: "compass", label: "compass of us", emoji: "🧭" },
   { id: "reply-to-jack", label: "reply to jack", emoji: "💬" },
   { id: "invite", label: "the invite", emoji: "🥂" },
   { id: "countdown", label: "countdown", emoji: "⏳" },
