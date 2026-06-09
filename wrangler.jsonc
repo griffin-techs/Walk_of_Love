@@ -1,7 +1,35 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "tanstack-start-app",
-  "compatibility_date": "2025-09-24",
-  "compatibility_flags": ["nodejs_compat"],
-  "main": "src/server.ts",
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "tanstack-start-app",
+	"compatibility_date": "2025-09-24",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"main": "src/server.ts",
+	"env": {
+		"dev": {
+			"name": "tanstack-start-app-dev",
+			"main": "src/api/worker.ts",
+			"d1_databases": [
+				{
+					"binding": "DB",
+					"database_name": "walkoflove-dev",
+					"database_id": "61e4610c-9086-4ec5-9415-69f1cdfe96aa",
+					"migrations_dir": "migrations/d1"
+				}
+			],
+			"r2_buckets": [
+				{
+					"bucket_name": "walkoflove-dev-media",
+					"binding": "MEDIA"
+				}
+			]
+		}
+	},
+	"r2_buckets": [
+		{
+			"bucket_name": "walkoflove-prod-media",
+			"binding": "MEDIA"
+		}
+	]
 }

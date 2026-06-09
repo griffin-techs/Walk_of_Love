@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { ClientOnly } from "@/components/ClientOnly";
 import { Hero } from "@/components/Hero";
 import { Interrogation, type Answers } from "@/components/Interrogation";
 import { DatePlanner, type DatePlan } from "@/components/DatePlanner";
@@ -53,23 +54,39 @@ function Index() {
   return (
     <main className="relative">
       {!loaded && <Loader onDone={() => setLoaded(true)} />}
-      <FloatingHearts />
-      <CursorGlow />
-      <MusicToggle />
-      <RainToggle />
-      <EasterEggs />
+      <ClientOnly>
+        <FloatingHearts />
+        <CursorGlow />
+        <MusicToggle />
+        <RainToggle />
+      </ClientOnly>
+      <ClientOnly>
+        <EasterEggs />
+      </ClientOnly>
       <SideNav />
       <div id="hero"><Hero /></div>
       <div id="todays-note"><TodaysNote /></div>
       <div id="interrogation"><Interrogation answers={answers} setAnswers={setAnswers} /></div>
       <div id="date-planner"><DatePlanner plan={plan} setPlan={setPlan} /></div>
       <div id="vacation"><Vacation picks={destinations} setPicks={setDestinations} /></div>
-      <div id="love-quiz"><LoveQuiz /></div>
-      <div id="compatibility"><Compatibility answers={answers} /></div>
+      <div id="love-quiz">
+        <ClientOnly>
+          <LoveQuiz />
+        </ClientOnly>
+      </div>
+      <div id="compatibility">
+        <ClientOnly>
+          <Compatibility answers={answers} />
+        </ClientOnly>
+      </div>
       <div id="dealbreakers"><Dealbreakers /></div>
       <div id="reasons"><Reasons /></div>
       <div id="promises"><Promises /></div>
-      <div id="headlines"><Headlines /></div>
+      <div id="headlines">
+        <ClientOnly>
+          <Headlines />
+        </ClientOnly>
+      </div>
       <div id="map-of-you"><MapOfYou /></div>
       <div id="open-when"><OpenWhen /></div>
       <div id="little-things"><LittleThings /></div>
@@ -84,14 +101,30 @@ function Index() {
       <div id="jokes-museum"><JokesMuseum /></div>
       <div id="time-capsule"><TimeCapsule /></div>
       <div id="universe"><Universe /></div>
-      <div id="sweetness"><SweetnessIndex /></div>
+      <div id="sweetness">
+        <ClientOnly>
+          <SweetnessIndex />
+        </ClientOnly>
+      </div>
       <div id="wish-i-could"><WishICould /></div>
       <div id="comfort-mode"><ComfortMode /></div>
-      <div id="compass"><CompassOfUs /></div>
+      <div id="compass">
+        <ClientOnly>
+          <CompassOfUs />
+        </ClientOnly>
+      </div>
       <div id="reply-to-jack"><ReplyToJack /></div>
-      <div id="invite"><Invite plan={plan} /></div>
+      <div id="invite">
+        <ClientOnly>
+          <Invite plan={plan} />
+        </ClientOnly>
+      </div>
       <div id="countdown"><Countdown plan={plan} /></div>
-      <div id="finale"><Finale answers={answers} plan={plan} destinations={destinations} /></div>
+      <div id="finale">
+        <ClientOnly>
+          <Finale answers={answers} plan={plan} destinations={destinations} />
+        </ClientOnly>
+      </div>
     </main>
   );
 }

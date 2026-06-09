@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 const MOODS = ["🥹", "😊", "😳", "🤭", "💖", "🥲", "😏", "🤔", "😭", "✨"];
 
@@ -14,10 +13,14 @@ export function ReplyToJack() {
     const trimmed = word.trim();
     if (!trimmed || trimmed.length > 60) return;
     setStatus("sending");
-    const { error } = await supabase
-      .from("sheila_replies")
-      .insert({ mood, word: trimmed });
-    if (error) {
+    const response = await fetch("/api/replies", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ mood, word: trimmed }),
+    });
+    if (!response.ok) {
       setStatus("error");
       return;
     }
