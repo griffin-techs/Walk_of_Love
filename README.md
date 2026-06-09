@@ -48,7 +48,7 @@ Built on TanStack Start + React + Tailwind + Cloudflare (Workers, D1, R2).
 28. 🧸 Comfort Mode (full-screen calming takeover)
 29. The Official Invite
 30. Countdown
-31. Finale
+31. Finale. 
 
 Plus global: floating hearts, cursor glow, music toggle, rain toggle, easter eggs (type "sheila", Konami code, moon clicks, idle whisper).
 
