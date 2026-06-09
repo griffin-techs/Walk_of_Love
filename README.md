@@ -1,8 +1,18 @@
-# For Sheila — a website from Jack 💌
+# Walk of Love 💜 The Art of Love 💌
 
 A one-of-one love letter built as an interactive site. Multiple sections, hidden interactions, a daily-changing note, a soundtrack, a "diary" with question-locked entries, and a reply form so it becomes a conversation, not a monologue.
 
-Built on Lovable (TanStack Start + React + Tailwind + Lovable Cloud/Supabase).
+Built on TanStack Start + React + Tailwind + Cloudflare (Workers, D1, R2).
+
+---
+
+## Current Architecture (June 2026)
+
+- Frontend: TanStack Start + React (Vite build)
+- Backend API: Hono on Cloudflare Workers (`src/api/worker.ts`)
+- Database: Cloudflare D1 (`walkoflove-dev` in dev)
+- Media: Cloudflare R2 (`walkoflove-dev-media` in dev, `walkoflove-prod-media` in prod)
+- Auth: Cookie session flow backed by D1 sessions table
 
 ---
 
@@ -99,6 +109,8 @@ Each polaroid frame in the Photo Album has a **⋯ menu** (top-right, on hover) 
 
 Tap an empty frame anywhere to open the file picker. All edits persist per-browser.
 
+Note: this component is still localStorage-based right now; it is not yet wired to the new `/api/media` R2 endpoints.
+
 ---
 
 ## 🔑 Diary unlock answers — cheat sheet (for Jack only)
@@ -141,18 +153,68 @@ Edit these in `src/components/Diary.tsx` → `QUESTIONS` array.
 
 ---
 
-## Backend (Lovable Cloud)
+## Backend (Cloudflare Worker API)
 
-- `sheila_replies` table stores mood + word from the Reply form.
-- Read replies via Lovable Cloud / Supabase dashboard.
+Main routes:
+
+- `GET /api/health`
+- `GET /api/replies`
+- `POST /api/replies`
+- `POST /api/auth/challenge`
+- `POST /api/auth/verify`
+- `POST /api/auth/logout`
+- `GET /api/memories` (auth required)
+- `POST /api/memories` (auth required)
+- `POST /api/media/upload-url` (auth required)
+- `PUT /api/media/:key` (auth required)
+- `GET /api/media/:key` (auth required)
+
+---
+
+## Data Persistence Status
+
+Cloud-backed now:
+
+- `ReplyToJack` messages save to D1 (`sheila_replies`)
+- `Memories` routes save to D1
+- Media API routes save/read from R2 (backend ready)
+
+Still browser-local (localStorage) for now:
+
+- Diary unlock state
+- Photo Album frame/caption state
+- Sweetness Index state
+- Time Capsule entries
+- Universe stars
+- Several other interaction widgets
 
 ---
 
 ## Run locally
 
 ```bash
-bun install
-bun dev
+npm install
+npm run dev
 ```
+
+Run Worker API in remote-dev mode (uses Cloudflare D1/R2 bindings):
+
+```bash
+npm exec wrangler -- dev --env dev --remote --port 8787
+```
+
+---
+
+## Deploy
+
+Frontend (recommended): Cloudflare Pages
+
+- Build command: `npm run build`
+- Output directory: `dist`
+
+Backend:
+
+- Deploy Worker: `npm exec wrangler -- deploy --env dev` (dev)
+- Prod deploy can use default environment once production DB config is added.
 
 Made with too much love and too little sleep. — Jack
