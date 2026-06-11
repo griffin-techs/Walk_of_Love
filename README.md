@@ -57,7 +57,45 @@ Walk of Love now includes a complete authentication system powered by **Better A
 - Edit profile page in `src/routes/profile.tsx` (e.g., add editable email, additional fields)
 - Toggle email verification or add OAuth providers in `src/lib/auth.ts`
 - Adjust session timeout and other Better Auth settings in auth config
+## 🔍 Device Fingerprinting
 
+Walk of Love now includes **FingerprintJS** for unique device identification. This enables:
+
+- **Device tracking** — identify users across sessions
+- **Security** — detect suspicious new devices
+- **Multi-device support** — track which devices accessed what
+- **Session verification** — link sessions to specific devices
+
+### Quick Start
+
+1. Get your free API key at [fingerprint.com](https://fingerprint.com)
+2. Add to `.env`:
+   ```
+   VITE_FINGERPRINT_API_KEY=your_key_here
+   VITE_FINGERPRINT_REGION=us
+   ```
+3. Use the hook in components:
+   ```tsx
+   import { useFingerprint } from "@/hooks/use-fingerprint"
+   
+   export function MyComponent() {
+     const { visitorId, data, isLoading } = useFingerprint()
+     return <p>Device: {visitorId}</p>
+   }
+   ```
+
+### Components & Utilities
+
+- `useFingerprint()` — Hook to access device fingerprint in any component
+- `DeviceFingerprintInfo` — Ready-to-use display component
+- `FingerprintDemo` — Example implementation with full UI
+- `src/lib/fingerprint.ts` — Configuration and types
+
+### Full Documentation
+
+See [FINGERPRINT_SETUP.md](FINGERPRINT_SETUP.md) for complete integration guide, examples, and security considerations.
+
+---
 ---
 
 1. Hero

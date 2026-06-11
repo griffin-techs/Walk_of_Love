@@ -4,6 +4,9 @@ export type ApiEnv = {
     MEDIA?: R2Bucket;
     BETTER_AUTH_SECRET?: string;
     BETTER_AUTH_URL?: string;
+    FINGERPRINT_SECRET_API_KEY?: string;
+    FINGERPRINT_SERVER_REGION?: "us" | "eu" | "ap";
+    FINGERPRINT_SERVER_BASE_URL?: string;
     GITHUB_CLIENT_ID?: string;
     GITHUB_CLIENT_SECRET?: string;
     GOOGLE_CLIENT_ID?: string;

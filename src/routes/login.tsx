@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { authClient } from "@/lib/auth-client";
+import heroImg from "@/assets/couple-hero.jpg";
 
 export const Route = createFileRoute("/login")({
   component: LoginRoute,
@@ -58,19 +59,30 @@ function LoginRoute() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-sunset px-4">
-      <div className="w-full max-w-md rounded-3xl border border-rose-200 bg-white/90 p-6 shadow-sm backdrop-blur">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4">
+      <div className="absolute inset-0">
+        <img
+          src={heroImg}
+          alt="Couple at golden hour"
+          className="h-full w-full object-cover blur-sm"
+        />
+        <div className="absolute inset-0 bg-linear-to-b from-white/35 via-rose-100/20 to-fuchsia-200/35" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-md rounded-3xl border border-white/45 bg-white/28 p-6 shadow-[0_12px_40px_rgba(15,23,42,0.2)] backdrop-blur-xl backdrop-saturate-150">
         <h1 className="text-2xl font-semibold text-slate-900">Welcome to Walk of Love</h1>
         <p className="mt-1 text-sm text-slate-600">
           Create your account first, then sign in to see your private space.
         </p>
 
-        <div className="mt-5 grid grid-cols-2 rounded-xl bg-rose-50 p-1 text-sm">
+        <div className="mt-5 grid grid-cols-2 rounded-xl border border-white/45 bg-white/20 p-1 text-sm backdrop-blur-md">
           <button
             type="button"
             onClick={() => setMode("signup")}
             className={`rounded-lg px-3 py-2 ${
-              mode === "signup" ? "bg-white font-medium text-rose-700 shadow-sm" : "text-rose-600"
+              mode === "signup"
+                ? "bg-white/55 font-medium text-rose-700 shadow-sm"
+                : "text-rose-700/80"
             }`}
           >
             Create account
@@ -79,7 +91,9 @@ function LoginRoute() {
             type="button"
             onClick={() => setMode("signin")}
             className={`rounded-lg px-3 py-2 ${
-              mode === "signin" ? "bg-white font-medium text-rose-700 shadow-sm" : "text-rose-600"
+              mode === "signin"
+                ? "bg-white/55 font-medium text-rose-700 shadow-sm"
+                : "text-rose-700/80"
             }`}
           >
             Sign in
@@ -92,7 +106,7 @@ function LoginRoute() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
-              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-rose-400"
+              className="w-full rounded-xl border border-white/60 bg-white/35 px-3 py-2 text-sm outline-none focus:border-rose-300"
             />
           ) : null}
           <input
@@ -101,7 +115,7 @@ function LoginRoute() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
-            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-rose-400"
+            className="w-full rounded-xl border border-white/60 bg-white/35 px-3 py-2 text-sm outline-none focus:border-rose-300"
           />
           <div className="relative">
             <input
@@ -111,7 +125,7 @@ function LoginRoute() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 pr-18 text-sm outline-none focus:border-rose-400"
+              className="w-full rounded-xl border border-white/60 bg-white/35 px-3 py-2 pr-18 text-sm outline-none focus:border-rose-300"
             />
             <button
               type="button"
@@ -129,11 +143,7 @@ function LoginRoute() {
             disabled={submitting}
             className="w-full rounded-xl bg-rose-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {submitting
-              ? "Please wait..."
-              : mode === "signup"
-                ? "Create account"
-                : "Sign in"}
+            {submitting ? "Please wait..." : mode === "signup" ? "Create account" : "Sign in"}
           </button>
         </form>
       </div>

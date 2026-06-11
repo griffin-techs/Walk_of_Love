@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import heroImg from "@/assets/couple-hero.jpg";
 
 const MESSAGES = [
   "Loading emotional damage…",
@@ -32,9 +33,18 @@ export function Loader({ onDone }: { onDone: () => void }) {
         <motion.div
           exit={{ opacity: 0 }}
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-sunset"
+          className="fixed inset-0 z-100 flex items-center justify-center overflow-hidden"
         >
-          <div className="text-center">
+          <div className="absolute inset-0">
+            <img
+              src={heroImg}
+              alt="Couple at golden hour"
+              className="h-full w-full object-cover blur-md"
+            />
+            <div className="absolute inset-0 bg-linear-to-b from-white/35 via-rose-100/20 to-fuchsia-200/35" />
+          </div>
+
+          <div className="relative z-10 text-center">
             <motion.div
               animate={{ scale: [1, 1.12, 1] }}
               transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}

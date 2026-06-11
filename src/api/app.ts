@@ -12,10 +12,140 @@ type ReplyRow = {
   created_at: string;
 };
 
+type FingerprintEnrichedResponse = {
+  event_id: string;
+  visitor_id: string | null;
+  ip_address: string | null;
+  timestamp: string | null;
+  confidence: {
+    score: number | null;
+  };
+  browser_details: {
+    browser_name: string | null;
+    browser_version: string | null;
+    os: string | null;
+    platform: string | null;
+  };
+};
+
 const app = new Hono<ApiEnv>();
 let authSchemaReady: Promise<void> | null = null;
 
-async function ensureBetterAuthSchema(db: D1Database): Promise<void> {
+function readPath(obj: unknown, path: string[]): unknown {
+  let current: unknown = obj;
+  for (const key of path) {
+    if (current == null || typeof current !== "object") {
+      return undefined;
+    }
+    current = (current as Record<string, unknown>)[key];
+  }
+  return current;
+}
+
+function asString(value: unknown): string | null {
+  return typeof value === "string" && value.trim() ? value : null;
+}
+
+function asNumber(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function regionToBaseUrl(region: string | undefined): string {
+  if (region === "eu") return "https://eu.api.fpjs.io";
+  if (region === "ap") return "https://ap.api.fpjs.io";
+  return "https://api.fpjs.io";
+}
+
+function normalizeFingerprintEvent(
+  payload: unknown,
+  fallbackEventId: string,
+): FingerprintEnrichedResponse {
+  const eventId =
+    asString(readPath(payload, ["event", "id"])) ||
+    asString(readPath(payload, ["event_id"])) ||
+    fallbackEventId;
+
+  const visitorId =
+    asString(readPath(payload, ["products", "identification", "data", "visitorId"])) ||
+    asString(readPath(payload, ["products", "identification", "data", "visitor_id"])) ||
+    null;
+
+  const ipAddress =
+    asString(readPath(payload, ["products", "identification", "data", "ip"])) ||
+    asString(readPath(payload, ["products", "identification", "data", "ipAddress"])) ||
+    asString(readPath(payload, ["products", "identification", "data", "ip_address"])) ||
+    null;
+
+  const confidenceScore =
+    asNumber(readPath(payload, ["products", "identification", "data", "confidence", "score"])) ||
+    asNumber(readPath(payload, ["products", "identification", "data", "confidence", "Score"])) ||
+    null;
+
+  const browserName =
+    asString(
+      readPath(payload, ["products", "identification", "data", "browserDetails", "browserName"]),
+    ) ||
+    asString(
+      readPath(payload, ["products", "identification", "data", "browser_details", "browser_name"]),
+    ) ||
+    null;
+
+  const browserVersion =
+    asString(
+      readPath(payload, ["products", "identification", "data", "browserDetails", "browserVersion"]),
+    ) ||
+    asString(
+      readPath(payload, [
+        "products",
+        "identification",
+        "data",
+        "browser_details",
+        "browser_version",
+      ]),
+    ) ||
+    null;
+
+  const os =
+    asString(readPath(payload, ["products", "identification", "data", "browserDetails", "os"])) ||
+    asString(readPath(payload, ["products", "identification", "data", "browser_details", "os"])) ||
+    null;
+
+  const platform =
+    asString(
+      readPath(payload, ["products", "identification", "data", "browserDetails", "platform"]),
+    ) ||
+    asString(
+      readPath(payload, ["products", "identification", "data", "browser_details", "platform"]),
+    ) ||
+    null;
+
+  const timestamp =
+    asString(readPath(payload, ["products", "identification", "data", "timestamp"])) ||
+    asString(readPath(payload, ["products", "identification", "data", "time"])) ||
+    null;
+
+  return {
+    event_id: eventId,
+    visitor_id: visitorId,
+    ip_address: ipAddress,
+    timestamp,
+    confidence: {
+      score: confidenceScore,
+    },
+    browser_details: {
+      browser_name: browserName,
+      browser_version: browserVersion,
+      os,
+      platform,
+    },
+  };
+}
+
+async function ensureBetterAuthSchema(db: ApiEnv["Bindings"]["DB"]): Promise<void> {
+  if (!db) {
+    return;
+  }
+
   await db
     .prepare(
       `CREATE TABLE IF NOT EXISTS "user" (
@@ -112,7 +242,7 @@ app.use(
   }),
 );
 
-app.on(["POST", "GET"], "/api/auth/*", (c) => {
+app.all("/api/auth/*", async (c) => {
   if (!c.env.DB) {
     return c.json({ error: "D1 binding DB is not configured" }, 503);
   }
@@ -121,13 +251,52 @@ app.on(["POST", "GET"], "/api/auth/*", (c) => {
     authSchemaReady = ensureBetterAuthSchema(c.env.DB);
   }
 
-  return authSchemaReady.then(() => {
-    const auth = createAuth(c.env);
-    return auth.handler(c.req.raw);
-  });
+  await authSchemaReady;
+  const auth = createAuth(c.env);
+  return auth.handler(c.req.raw);
 });
 app.route("/api/media", mediaRoute);
 app.route("/api/memories", memoriesRoute);
+
+app.get("/api/fingerprint/event/:eventId", async (c) => {
+  const eventId = c.req.param("eventId")?.trim();
+  if (!eventId) {
+    return c.json({ error: "eventId is required" }, 422);
+  }
+
+  const secretApiKey = c.env.FINGERPRINT_SECRET_API_KEY;
+  if (!secretApiKey) {
+    return c.json({ error: "FINGERPRINT_SECRET_API_KEY is not configured" }, 503);
+  }
+
+  const explicitBase = c.env.FINGERPRINT_SERVER_BASE_URL?.trim();
+  const baseUrl = explicitBase || regionToBaseUrl(c.env.FINGERPRINT_SERVER_REGION);
+  const endpoint = `${baseUrl.replace(/\/$/, "")}/events/${encodeURIComponent(eventId)}`;
+
+  const upstream = await fetch(endpoint, {
+    method: "GET",
+    headers: {
+      "Auth-API-Key": secretApiKey,
+      Accept: "application/json",
+    },
+  });
+
+  if (!upstream.ok) {
+    const details = await upstream.text();
+    return c.json(
+      {
+        error: "Failed to fetch Fingerprint event",
+        status: upstream.status,
+        details,
+      },
+      { status: upstream.status as 400 | 401 | 403 | 404 | 409 | 410 | 422 | 429 | 500 | 503 },
+    );
+  }
+
+  const payload = await upstream.json();
+  const enriched = normalizeFingerprintEvent(payload, eventId);
+  return c.json({ ok: true, event: enriched });
+});
 
 app.get("/api/health", (c) => {
   return c.json({ ok: true, service: "walkoflove-api" });

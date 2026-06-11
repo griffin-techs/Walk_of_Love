@@ -9,6 +9,8 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { FingerprintProvider } from "@fingerprint/react";
+import { FINGERPRINT_CONFIG, FINGERPRINT_ENABLED } from "../lib/fingerprint";
 
 function NotFoundComponent() {
   return (
@@ -72,15 +74,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "walkoflove 💜 The Art of Love" },
+      { title: "walkoflove - The Art of Love" },
       { name: "description", content: "walkoflove: a private archive for you and your person. Memories, moments, and everything in between." },
       { name: "author", content: "Jack" },
-      { property: "og:title", content: "walkoflove 💜 The Art of Love" },
+      { property: "og:title", content: "walkoflove - The Art of Love" },
       { property: "og:description", content: "walkoflove: a private archive for you and your person. Memories, moments, and everything in between." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "walkoflove 💜 The Art of Love" },
+      { name: "twitter:title", content: "walkoflove - The Art of Love" },
       { name: "twitter:description", content: "walkoflove: a private archive for you and your person. Memories, moments, and everything in between." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a2e6906c-71ff-446e-adf7-3c8cf9f4ce2c/id-preview-52730369--6f51581a-4ade-4c32-8b0b-15a068709773.lovable.app-1779775930076.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a2e6906c-71ff-446e-adf7-3c8cf9f4ce2c/id-preview-52730369--6f51581a-4ade-4c32-8b0b-15a068709773.lovable.app-1779775930076.png" },
@@ -121,9 +123,23 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  if (!FINGERPRINT_ENABLED) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <Outlet />
+      </QueryClientProvider>
+    );
+  }
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <Outlet />
-    </QueryClientProvider>
+    <FingerprintProvider
+      apiKey={FINGERPRINT_CONFIG.apiKey}
+      region={FINGERPRINT_CONFIG.region}
+      endpoints={FINGERPRINT_CONFIG.endpoint ? [FINGERPRINT_CONFIG.endpoint] : undefined}
+    >
+      <QueryClientProvider client={queryClient}>
+        <Outlet />
+      </QueryClientProvider>
+    </FingerprintProvider>
   );
 }
