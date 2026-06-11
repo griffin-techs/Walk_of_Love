@@ -447,7 +447,7 @@ export function DailyDiary() {
   }
 
   return (
-    <div className="w-full bg-gradient-sunset px-4 py-12 md:px-8">
+    <div className="w-full px-4 py-12 md:px-8">
       <div className="mx-auto max-w-7xl">
         <h2 className="text-3xl font-semibold text-slate-900 md:text-4xl">Daily Love Diary</h2>
         <p className="mt-1 text-sm text-slate-600 md:text-base">

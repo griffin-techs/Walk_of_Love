@@ -92,6 +92,11 @@ export function SideNav() {
     setOpen(false);
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setOpen(false);
+  };
+
   const handleSignOut = async () => {
     await authClient.signOut();
     setOpen(false);
@@ -114,7 +119,14 @@ export function SideNav() {
             <span className="block h-0.5 w-5 rounded-full bg-foreground" />
           </span>
         </button>
-        <span className="font-script text-lg text-primary">Walk of Love</span>
+        <button
+          type="button"
+          onClick={scrollToTop}
+          className="font-script text-lg text-primary cursor-pointer transition-opacity hover:opacity-80"
+          aria-label="Scroll to top"
+        >
+          Walk of Love
+        </button>
       </div>
 
       <AnimatePresence>

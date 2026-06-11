@@ -11,10 +11,11 @@ import {
 import appCss from "../styles.css?url";
 import { FingerprintProvider } from "@fingerprint/react";
 import { FINGERPRINT_CONFIG, FINGERPRINT_ENABLED } from "../lib/fingerprint";
+import heroImg from "@/assets/couple-hero.jpg";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-transparent px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
@@ -39,7 +40,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-transparent px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
           This page didn't load
@@ -126,7 +127,9 @@ function RootComponent() {
   if (!FINGERPRINT_ENABLED) {
     return (
       <QueryClientProvider client={queryClient}>
-        <Outlet />
+        <AppBackground>
+          <Outlet />
+        </AppBackground>
       </QueryClientProvider>
     );
   }
@@ -138,8 +141,26 @@ function RootComponent() {
       endpoints={FINGERPRINT_CONFIG.endpoint ? [FINGERPRINT_CONFIG.endpoint] : undefined}
     >
       <QueryClientProvider client={queryClient}>
-        <Outlet />
+        <AppBackground>
+          <Outlet />
+        </AppBackground>
       </QueryClientProvider>
     </FingerprintProvider>
+  );
+}
+
+function AppBackground({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative min-h-screen">
+      <div className="pointer-events-none fixed inset-0 -z-10">
+        <img
+          src={heroImg}
+          alt="Couple at golden hour"
+          className="h-full w-full scale-105 object-cover blur-[2px]"
+        />
+        <div className="absolute inset-0 bg-linear-to-b from-white/30 via-rose-100/18 to-fuchsia-200/30" />
+      </div>
+      {children}
+    </div>
   );
 }
