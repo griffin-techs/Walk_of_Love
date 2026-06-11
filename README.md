@@ -12,11 +12,53 @@ Built on TanStack Start + React + Tailwind + Cloudflare (Workers, D1, R2).
 - Backend API: Hono on Cloudflare Workers (`src/api/worker.ts`)
 - Database: Cloudflare D1 (`walkoflove-dev` in dev)
 - Media: Cloudflare R2 (`walkoflove-dev-media` in dev, `walkoflove-prod-media` in prod)
-- Auth: Cookie session flow backed by D1 sessions table
+- **Auth**: Better Auth v1.6.16 with email/password signup, session-based flow backed by D1
 
 ---
 
-## Sections (in order)
+## 🔐 Authentication System
+
+Walk of Love now includes a complete authentication system powered by **Better Auth**:
+
+### Features
+- **Email/Password signup & signin** — users can create an account with email and password
+- **User profiles** — each user has a profile with an editable name field
+- **Session management** — secure session-based authentication backed by D1
+- **Profile dropdown** — quick access menu in the sidebar showing user info, profile link, and logout
+
+### Pages
+- `/login` — signup/signin toggle (dual-mode form with password visibility toggle)
+- `/profile` — view and edit user name, with sign-out option
+- Protected routes — diary, walk, and other sections require authentication
+
+### How it works
+
+1. **Server-side auth** (`src/lib/auth.ts`):
+   - Configured Better Auth instance with D1 adapter
+   - Email/password provider enabled
+   - Mounts at `/api/auth/*` on the Worker
+
+2. **Client-side integration** (`src/lib/auth-client.ts`):
+   - Browser auth client for signup/signin flows
+   - Credentials-enabled for cross-origin requests
+   - Uses `authClient.signUp.email()` and `authClient.signIn.email()` methods
+
+3. **Database schema** — Better Auth creates these tables automatically on first startup:
+   - `user` — stores name, email, and user metadata
+   - `session` — manages active sessions
+   - `account` — links auth providers to users
+   - `verification` — handles email verification tokens
+
+4. **Protected routes** — wrapped with `AuthGate` component that redirects unauthenticated users to `/login`
+
+### Customization
+
+- Edit signup/signin form in `src/routes/login.tsx` (e.g., add more fields, change validation)
+- Edit profile page in `src/routes/profile.tsx` (e.g., add editable email, additional fields)
+- Toggle email verification or add OAuth providers in `src/lib/auth.ts`
+- Adjust session timeout and other Better Auth settings in auth config
+
+---
 
 1. Hero
 2. Today's Note (changes by day)
@@ -157,12 +199,18 @@ Edit these in `src/components/Diary.tsx` → `QUESTIONS` array.
 
 Main routes:
 
+### Auth endpoints (`/api/auth/*`)
+- `POST /api/auth/sign-up/email` — create new account
+- `POST /api/auth/sign-in/email` — login with email/password
+- `POST /api/auth/sign-out` — destroy session
+- `POST /api/auth/update-user` — update user profile (name, etc.)
+- `GET /api/auth/session` — get current session info
+- `POST /api/auth/change-password` — change user password (if implemented)
+
+### Content endpoints
 - `GET /api/health`
 - `GET /api/replies`
 - `POST /api/replies`
-- `POST /api/auth/challenge`
-- `POST /api/auth/verify`
-- `POST /api/auth/logout`
 - `GET /api/memories` (auth required)
 - `POST /api/memories` (auth required)
 - `POST /api/media/upload-url` (auth required)
@@ -175,6 +223,7 @@ Main routes:
 
 Cloud-backed now:
 
+- **User authentication** — accounts, sessions, and profiles saved to D1
 - `ReplyToJack` messages save to D1 (`sheila_replies`)
 - `Memories` routes save to D1
 - Media API routes save/read from R2 (backend ready)
@@ -192,29 +241,41 @@ Still browser-local (localStorage) for now:
 
 ## Run locally
 
+### Setup
+1. Install dependencies: `npm install`
+2. Set up environment: Create `.env` with necessary variables (see `.env.example`)
+3. The Worker will automatically bootstrap Better Auth tables on first startup
+
+### Development
+
+Run frontend dev server:
 ```bash
-npm install
 npm run dev
 ```
 
 Run Worker API in remote-dev mode (uses Cloudflare D1/R2 bindings):
-
 ```bash
-npm exec wrangler -- dev --env dev --remote --port 8787
+npm run worker:dev
 ```
+
+Both servers need to run for full local development. Frontend runs on **8080**, Worker API on **8787**.
 
 ---
 
 ## Deploy
 
-Frontend (recommended): Cloudflare Pages
-
+### Frontend (Cloudflare Pages)
 - Build command: `npm run build`
 - Output directory: `dist`
 
-Backend:
+### Backend (Cloudflare Worker)
+- Deploy: `npm exec wrangler -- deploy --env dev` (dev environment)
+- Production: Configure production D1 database and deploy with `--env prod`
 
-- Deploy Worker: `npm exec wrangler -- deploy --env dev` (dev)
-- Prod deploy can use default environment once production DB config is added.
+### Pre-deployment checklist
+- ✅ Better Auth schema is created automatically on Worker startup
+- ✅ Set `BETTER_AUTH_URL` environment variable in `wrangler.jsonc` to match your domain
+- ✅ Ensure D1 database is created and configured in `wrangler.jsonc`
+- ✅ Update CORS allowed origins for production domain
 
 Made with too much love and too little sleep. — Jack

@@ -14,10 +14,16 @@
 			"migrations_dir": "migrations/d1"
 		}
 	],
+	"vars": {
+		"BETTER_AUTH_URL": "http://localhost:8787"
+	},
 	"env": {
 		"dev": {
 			"name": "tanstack-start-app-dev",
 			"main": "src/api/worker.ts",
+			"vars": {
+				"BETTER_AUTH_URL": "http://localhost:8787"
+			},
 			"d1_databases": [
 				{
 					"binding": "DB",

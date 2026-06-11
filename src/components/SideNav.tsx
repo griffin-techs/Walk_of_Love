@@ -1,5 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { ChevronDown } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 type NavItem =
   | { kind: "route"; href: string; label: string; emoji: string }
@@ -45,7 +48,12 @@ const SECTIONS: NavItem[] = [
 
 export function SideNav() {
   const [open, setOpen] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const panelRef = useRef<HTMLDivElement | null>(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
+  const { data: session } = authClient.useSession();
+  const profileName = session?.user?.name?.trim() || "My profile";
 
   useEffect(() => {
     if (!open) return;
@@ -65,27 +73,49 @@ export function SideNav() {
     };
   }, [open]);
 
+  useEffect(() => {
+    if (!showDropdown) return;
+    const onClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+    };
+  }, [showDropdown]);
+
   const go = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     setOpen(false);
   };
 
+  const handleSignOut = async () => {
+    await authClient.signOut();
+    setOpen(false);
+    navigate({ to: "/login", replace: true });
+  };
+
   return (
     <>
-      {/* trigger */}
-      <button
-        type="button"
-        aria-label="open menu"
-        onClick={() => setOpen((v) => !v)}
-        className="fixed left-6 top-6 z-110 flex h-11 w-11 items-center justify-center rounded-full border border-primary/30 bg-card/80 text-foreground shadow-lg backdrop-blur-md transition-transform hover:scale-110 active:scale-95"
-      >
-        <span className="flex flex-col gap-1">
-          <span className="block h-0.5 w-5 rounded-full bg-foreground" />
-          <span className="block h-0.5 w-5 rounded-full bg-foreground" />
-          <span className="block h-0.5 w-5 rounded-full bg-foreground" />
-        </span>
-      </button>
+      {/* trigger with brand name */}
+      <div className="fixed left-6 top-6 z-110 flex items-center gap-3">
+        <button
+          type="button"
+          aria-label="open menu"
+          onClick={() => setOpen((v) => !v)}
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-primary/30 bg-card/80 text-foreground shadow-lg backdrop-blur-md transition-transform hover:scale-110 active:scale-95"
+        >
+          <span className="flex flex-col gap-1">
+            <span className="block h-0.5 w-5 rounded-full bg-foreground" />
+            <span className="block h-0.5 w-5 rounded-full bg-foreground" />
+            <span className="block h-0.5 w-5 rounded-full bg-foreground" />
+          </span>
+        </button>
+        <span className="font-script text-lg text-primary">Walk of Love</span>
+      </div>
 
       <AnimatePresence>
         {open && (
@@ -105,34 +135,90 @@ export function SideNav() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed left-0 top-0 z-108 h-full w-75 max-w-[85vw] overflow-y-auto border-r border-primary/20 bg-card/95 p-6 pt-20 shadow-2xl backdrop-blur-xl"
+              className="fixed left-0 top-0 z-108 flex h-full w-75 max-w-[85vw] flex-col border-r border-primary/20 bg-card/95 p-6 pt-20 shadow-2xl backdrop-blur-xl"
             >
               <p className="px-2 font-script text-2xl text-primary">wander, my love</p>
-              <p className="mt-1 px-2 text-xs uppercase tracking-widest text-muted-foreground">
+              <p className="mt-4 px-2 text-xs uppercase tracking-widest text-muted-foreground">
                 pick a chapter
               </p>
-              <nav className="mt-6 flex flex-col gap-1">
+              <nav className="hide-scrollbar mt-6 flex-1 overflow-y-auto pr-1">
+                <div className="flex flex-col gap-1">
                 {SECTIONS.map((s) => (
-                  <button
-                    key={s.kind === "section" ? s.id : s.href}
-                    type="button"
-                    onClick={() => {
-                      if (s.kind === "section") {
-                        go(s.id);
-                      }
-                    }}
-                    className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-foreground/80 transition-colors hover:bg-primary/10 hover:text-primary"
-                  >
-                    <span className="text-lg transition-transform group-hover:scale-125">
-                      {s.emoji}
-                    </span>
-                    <span className="font-display">{s.label}</span>
-                  </button>
+                  s.kind === "section" ? (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => go(s.id)}
+                      className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-foreground/80 transition-colors hover:bg-primary/10 hover:text-primary"
+                    >
+                      <span className="text-lg transition-transform group-hover:scale-125">
+                        {s.emoji}
+                      </span>
+                      <span className="font-display">{s.label}</span>
+                    </button>
+                  ) : (
+                    <Link
+                      key={s.href}
+                      to={s.href as "/" | "/walk" | "/diary" | "/login" | "/profile"}
+                      onClick={() => setOpen(false)}
+                      className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-foreground/80 transition-colors hover:bg-primary/10 hover:text-primary"
+                    >
+                      <span className="text-lg transition-transform group-hover:scale-125">
+                        {s.emoji}
+                      </span>
+                      <span className="font-display">{s.label}</span>
+                    </Link>
+                  )
                 ))}
+                </div>
               </nav>
-              <p className="mt-8 px-3 text-center font-script text-base text-primary/70">
-                — every chapter is for you ❤
-              </p>
+              <div className="relative mt-4 px-2" ref={dropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    console.log("Profile button clicked");
+                    setShowDropdown(!showDropdown);
+                  }}
+                  className="group flex w-full items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2.5 text-left text-sm text-foreground/90 transition-colors hover:bg-primary/10 hover:text-primary"
+                >
+                  <span className="text-lg transition-transform group-hover:scale-125">👤</span>
+                  <span className="font-display">{profileName}</span>
+                  <ChevronDown className={`ml-auto h-4 w-4 transition-transform ${showDropdown ? "rotate-180" : ""}`} />
+                </button>
+                
+                {showDropdown && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    className="absolute bottom-full left-0 right-0 z-50 mb-2 rounded-lg border border-primary/20 bg-card shadow-lg"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        console.log("View profile clicked");
+                        navigate({ to: "/profile" });
+                        setShowDropdown(false);
+                        setOpen(false);
+                      }}
+                      className="w-full px-3 py-2 text-left text-sm hover:bg-primary/10 first:rounded-t-lg transition-colors"
+                    >
+                      View profile
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        console.log("Logout clicked");
+                        setShowDropdown(false);
+                        handleSignOut();
+                      }}
+                      className="w-full px-3 py-2 text-left text-sm hover:bg-primary/10 last:rounded-b-lg transition-colors border-t border-primary/10"
+                    >
+                      Logout
+                    </button>
+                  </motion.div>
+                )}
+              </div>
             </motion.aside>
           </>
         )}

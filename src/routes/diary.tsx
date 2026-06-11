@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { ClientOnly } from "@/components/ClientOnly";
+import { AuthGate } from "@/components/AuthGate";
 
 type Mood = "Loved" | "Happy" | "Calm" | "Grateful" | "Missing You";
 
@@ -118,9 +119,11 @@ export const Route = createFileRoute("/diary")({
 
 function DiaryRoute() {
   return (
-    <ClientOnly>
-      <DiaryPage />
-    </ClientOnly>
+    <AuthGate>
+      <ClientOnly>
+        <DiaryPage />
+      </ClientOnly>
+    </AuthGate>
   );
 }
 

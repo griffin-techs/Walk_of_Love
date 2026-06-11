@@ -181,6 +181,13 @@
 @layer utilities {
   .font-display { font-family: var(--font-display); }
   .font-script { font-family: var(--font-script); }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
   .text-gradient-hero {
     background-image: var(--gradient-hero);
     -webkit-background-clip: text;
