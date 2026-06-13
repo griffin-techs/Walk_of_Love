@@ -51,7 +51,7 @@ Walk of Love now includes a complete authentication system powered by **Better A
 
 4. **Protected routes** — wrapped with `AuthGate` component that redirects unauthenticated users to `/login`
 
-### Customization....
+### Customization
 
 - Edit signup/signin form in `src/routes/login.tsx` (e.g., add more fields, change validation)
 - Edit profile page in `src/routes/profile.tsx` (e.g., add editable email, additional fields)
