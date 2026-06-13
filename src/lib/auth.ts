@@ -47,5 +47,3 @@ export function createAuth(env: AuthBindings) {
     ],
   });
 }
-
-export const auth = createAuth({} as AuthBindings);
