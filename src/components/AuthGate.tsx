@@ -3,14 +3,6 @@ import { useNavigate } from "@tanstack/react-router";
 import { authClient } from "@/lib/auth-client";
 
 export function AuthGate({ children }: { children: React.ReactNode }) {
-  if (typeof window === "undefined") {
-    return <>{children}</>;
-  }
-
-  return <AuthGateClient>{children}</AuthGateClient>;
-}
-
-function AuthGateClient({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const { data: session, isPending } = authClient.useSession();
 
