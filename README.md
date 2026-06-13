@@ -57,7 +57,7 @@ Walk of Love now includes a complete authentication system powered by **Better A
 - Edit profile page in `src/routes/profile.tsx` (e.g., add editable email, additional fields)
 - Toggle email verification or add OAuth providers in `src/lib/auth.ts`
 - Adjust session timeout and other Better Auth settings in auth config
-## 🔍 Device Fingerprinting..
+## 🔍 Device Fingerprinting
 
 Walk of Love now includes **FingerprintJS** for unique device identification. This enables:
 
