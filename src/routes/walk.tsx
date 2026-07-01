@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { ClientOnly } from "@/components/ClientOnly";
-import { AuthGate } from "@/components/AuthGate";
+
 
 type ReactionType = "love" | "hug" | "kiss" | "smile" | "laugh";
 
@@ -193,11 +193,11 @@ export const Route = createFileRoute("/walk")({
 
 function WalkRoute() {
   return (
-    <AuthGate>
+    
       <ClientOnly>
         <WalkPage />
       </ClientOnly>
-    </AuthGate>
+    
   );
 }
 
