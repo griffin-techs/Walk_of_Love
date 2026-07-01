@@ -10,24 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WalkRouteImport } from './routes/walk'
-import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as DiaryRouteImport } from './routes/diary'
 import { Route as IndexRouteImport } from './routes/index'
 
 const WalkRoute = WalkRouteImport.update({
   id: '/walk',
   path: '/walk',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DiaryRoute = DiaryRouteImport.update({
@@ -44,38 +32,30 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/diary': typeof DiaryRoute
-  '/login': typeof LoginRoute
-  '/profile': typeof ProfileRoute
   '/walk': typeof WalkRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/diary': typeof DiaryRoute
-  '/login': typeof LoginRoute
-  '/profile': typeof ProfileRoute
   '/walk': typeof WalkRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/diary': typeof DiaryRoute
-  '/login': typeof LoginRoute
-  '/profile': typeof ProfileRoute
   '/walk': typeof WalkRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/diary' | '/login' | '/profile' | '/walk'
+  fullPaths: '/' | '/diary' | '/walk'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/diary' | '/login' | '/profile' | '/walk'
-  id: '__root__' | '/' | '/diary' | '/login' | '/profile' | '/walk'
+  to: '/' | '/diary' | '/walk'
+  id: '__root__' | '/' | '/diary' | '/walk'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DiaryRoute: typeof DiaryRoute
-  LoginRoute: typeof LoginRoute
-  ProfileRoute: typeof ProfileRoute
   WalkRoute: typeof WalkRoute
 }
 
@@ -86,20 +66,6 @@ declare module '@tanstack/react-router' {
       path: '/walk'
       fullPath: '/walk'
       preLoaderRoute: typeof WalkRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/diary': {
@@ -122,8 +88,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DiaryRoute: DiaryRoute,
-  LoginRoute: LoginRoute,
-  ProfileRoute: ProfileRoute,
   WalkRoute: WalkRoute,
 }
 export const routeTree = rootRouteImport
