@@ -1,8 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { ChevronDown } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
+import { Link } from "@tanstack/react-router";
 
 type NavItem =
   | { kind: "route"; href: string; label: string; emoji: string }
@@ -48,12 +46,7 @@ const SECTIONS: NavItem[] = [
 
 export function SideNav() {
   const [open, setOpen] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
   const panelRef = useRef<HTMLDivElement | null>(null);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const navigate = useNavigate();
-  const { data: session } = authClient.useSession();
-  const profileName = session?.user?.name?.trim() || "My profile";
 
   useEffect(() => {
     if (!open) return;
@@ -73,19 +66,6 @@ export function SideNav() {
     };
   }, [open]);
 
-  useEffect(() => {
-    if (!showDropdown) return;
-    const onClick = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => {
-      document.removeEventListener("mousedown", onClick);
-    };
-  }, [showDropdown]);
-
   const go = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -95,12 +75,6 @@ export function SideNav() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
     setOpen(false);
-  };
-
-  const handleSignOut = async () => {
-    await authClient.signOut();
-    setOpen(false);
-    navigate({ to: "/login", replace: true });
   };
 
   return (
@@ -171,7 +145,7 @@ export function SideNav() {
                   ) : (
                     <Link
                       key={s.href}
-                      to={s.href as "/" | "/walk" | "/diary" | "/login" | "/profile"}
+                      to={s.href as "/" | "/walk" | "/diary"}
                       onClick={() => setOpen(false)}
                       className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-foreground/80 transition-colors hover:bg-primary/10 hover:text-primary"
                     >
@@ -184,53 +158,6 @@ export function SideNav() {
                 ))}
                 </div>
               </nav>
-              <div className="relative mt-4 px-2" ref={dropdownRef}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    console.log("Profile button clicked");
-                    setShowDropdown(!showDropdown);
-                  }}
-                  className="group flex w-full items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2.5 text-left text-sm text-foreground/90 transition-colors hover:bg-primary/10 hover:text-primary"
-                >
-                  <span className="text-lg transition-transform group-hover:scale-125">👤</span>
-                  <span className="font-display">{profileName}</span>
-                  <ChevronDown className={`ml-auto h-4 w-4 transition-transform ${showDropdown ? "rotate-180" : ""}`} />
-                </button>
-                
-                {showDropdown && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8 }}
-                    className="absolute bottom-full left-0 right-0 z-50 mb-2 rounded-lg border border-primary/20 bg-card shadow-lg"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        console.log("View profile clicked");
-                        navigate({ to: "/profile" });
-                        setShowDropdown(false);
-                        setOpen(false);
-                      }}
-                      className="w-full px-3 py-2 text-left text-sm hover:bg-primary/10 first:rounded-t-lg transition-colors"
-                    >
-                      View profile
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        console.log("Logout clicked");
-                        setShowDropdown(false);
-                        handleSignOut();
-                      }}
-                      className="w-full px-3 py-2 text-left text-sm hover:bg-primary/10 last:rounded-b-lg transition-colors border-t border-primary/10"
-                    >
-                      Logout
-                    </button>
-                  </motion.div>
-                )}
-              </div>
             </motion.aside>
           </>
         )}

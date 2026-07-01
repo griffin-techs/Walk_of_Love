@@ -42,7 +42,7 @@ import { ComfortMode } from "@/components/ComfortMode";
 import { CompassOfUs } from "@/components/CompassOfUs";
 import { WalkOfLove } from "@/components/WalkOfLove";
 import { DailyDiary } from "@/components/DailyDiary";
-import { AuthGate } from "@/components/AuthGate";
+
 export const Route = createFileRoute("/")({
   component: Index,
 });
@@ -54,7 +54,7 @@ function Index() {
   const [destinations, setDestinations] = useState<string[]>([]);
 
   return (
-    <AuthGate>
+    
       <main className="relative">
         {!loaded && <Loader onDone={() => setLoaded(true)} />}
         <ClientOnly>
@@ -131,6 +131,6 @@ function Index() {
           </ClientOnly>
         </div>
       </main>
-    </AuthGate>
+    
   );
 }
